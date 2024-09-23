@@ -1,0 +1,1266 @@
+{
+	"compiler": {
+		"version": "0.8.27+commit.40a35a09"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "what",
+						"type": "string"
+					}
+				],
+				"name": "AddLibraryOwner",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "Alias",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "Address",
+						"type": "address"
+					}
+				],
+				"name": "AddSystemAddress",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"name": "Addresses",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "Aliases",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "CYUN",
+				"outputs": [
+					{
+						"internalType": "contract LIBSTRINGS",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "UserToken",
+						"type": "address"
+					}
+				],
+				"name": "Enter",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint64",
+								"name": "Soul",
+								"type": "uint64"
+							},
+							{
+								"components": [
+									{
+										"internalType": "address",
+										"name": "Phi",
+										"type": "address"
+									},
+									{
+										"internalType": "contract SHA",
+										"name": "Mu",
+										"type": "address"
+									},
+									{
+										"internalType": "uint64",
+										"name": "Xi",
+										"type": "uint64"
+									},
+									{
+										"internalType": "uint64",
+										"name": "Pi",
+										"type": "uint64"
+									},
+									{
+										"internalType": "contract SHIO",
+										"name": "Shio",
+										"type": "address"
+									},
+									{
+										"internalType": "uint64",
+										"name": "Ring",
+										"type": "uint64"
+									},
+									{
+										"internalType": "uint64",
+										"name": "Omicron",
+										"type": "uint64"
+									},
+									{
+										"internalType": "uint64",
+										"name": "Omega",
+										"type": "uint64"
+									}
+								],
+								"internalType": "struct Bao",
+								"name": "On",
+								"type": "tuple"
+							},
+							{
+								"internalType": "string",
+								"name": "Username",
+								"type": "string"
+							},
+							{
+								"internalType": "uint64",
+								"name": "Entropy",
+								"type": "uint64"
+							}
+						],
+						"internalType": "struct User",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "Entropy",
+				"outputs": [
+					{
+						"internalType": "uint64",
+						"name": "",
+						"type": "uint64"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint64",
+						"name": "soul",
+						"type": "uint64"
+					}
+				],
+				"name": "GetAddressBySoul",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "UserAddress",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_a",
+						"type": "address"
+					}
+				],
+				"name": "GetMarketRate",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "GetUser",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint64",
+								"name": "Soul",
+								"type": "uint64"
+							},
+							{
+								"components": [
+									{
+										"internalType": "address",
+										"name": "Phi",
+										"type": "address"
+									},
+									{
+										"internalType": "contract SHA",
+										"name": "Mu",
+										"type": "address"
+									},
+									{
+										"internalType": "uint64",
+										"name": "Xi",
+										"type": "uint64"
+									},
+									{
+										"internalType": "uint64",
+										"name": "Pi",
+										"type": "uint64"
+									},
+									{
+										"internalType": "contract SHIO",
+										"name": "Shio",
+										"type": "address"
+									},
+									{
+										"internalType": "uint64",
+										"name": "Ring",
+										"type": "uint64"
+									},
+									{
+										"internalType": "uint64",
+										"name": "Omicron",
+										"type": "uint64"
+									},
+									{
+										"internalType": "uint64",
+										"name": "Omega",
+										"type": "uint64"
+									}
+								],
+								"internalType": "struct Bao",
+								"name": "On",
+								"type": "tuple"
+							},
+							{
+								"internalType": "string",
+								"name": "Username",
+								"type": "string"
+							},
+							{
+								"internalType": "uint64",
+								"name": "Entropy",
+								"type": "uint64"
+							}
+						],
+						"internalType": "struct User",
+						"name": "Alpha",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "who",
+						"type": "address"
+					}
+				],
+				"name": "GetUserByAddress",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint64",
+								"name": "Soul",
+								"type": "uint64"
+							},
+							{
+								"components": [
+									{
+										"internalType": "address",
+										"name": "Phi",
+										"type": "address"
+									},
+									{
+										"internalType": "contract SHA",
+										"name": "Mu",
+										"type": "address"
+									},
+									{
+										"internalType": "uint64",
+										"name": "Xi",
+										"type": "uint64"
+									},
+									{
+										"internalType": "uint64",
+										"name": "Pi",
+										"type": "uint64"
+									},
+									{
+										"internalType": "contract SHIO",
+										"name": "Shio",
+										"type": "address"
+									},
+									{
+										"internalType": "uint64",
+										"name": "Ring",
+										"type": "uint64"
+									},
+									{
+										"internalType": "uint64",
+										"name": "Omicron",
+										"type": "uint64"
+									},
+									{
+										"internalType": "uint64",
+										"name": "Omega",
+										"type": "uint64"
+									}
+								],
+								"internalType": "struct Bao",
+								"name": "On",
+								"type": "tuple"
+							},
+							{
+								"internalType": "string",
+								"name": "Username",
+								"type": "string"
+							},
+							{
+								"internalType": "uint64",
+								"name": "Entropy",
+								"type": "uint64"
+							}
+						],
+						"internalType": "struct User",
+						"name": "Alpha",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint64",
+						"name": "Soul",
+						"type": "uint64"
+					}
+				],
+				"name": "GetUserBySoul",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint64",
+								"name": "Soul",
+								"type": "uint64"
+							},
+							{
+								"components": [
+									{
+										"internalType": "address",
+										"name": "Phi",
+										"type": "address"
+									},
+									{
+										"internalType": "contract SHA",
+										"name": "Mu",
+										"type": "address"
+									},
+									{
+										"internalType": "uint64",
+										"name": "Xi",
+										"type": "uint64"
+									},
+									{
+										"internalType": "uint64",
+										"name": "Pi",
+										"type": "uint64"
+									},
+									{
+										"internalType": "contract SHIO",
+										"name": "Shio",
+										"type": "address"
+									},
+									{
+										"internalType": "uint64",
+										"name": "Ring",
+										"type": "uint64"
+									},
+									{
+										"internalType": "uint64",
+										"name": "Omicron",
+										"type": "uint64"
+									},
+									{
+										"internalType": "uint64",
+										"name": "Omega",
+										"type": "uint64"
+									}
+								],
+								"internalType": "struct Bao",
+								"name": "On",
+								"type": "tuple"
+							},
+							{
+								"internalType": "string",
+								"name": "Username",
+								"type": "string"
+							},
+							{
+								"internalType": "uint64",
+								"name": "Entropy",
+								"type": "uint64"
+							}
+						],
+						"internalType": "struct User",
+						"name": "Alpha",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "GetUserSoul",
+				"outputs": [
+					{
+						"internalType": "uint64",
+						"name": "",
+						"type": "uint64"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "wallet",
+						"type": "address"
+					}
+				],
+				"name": "GetUserTokenAddress",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "UserToken",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint64",
+						"name": "Soul",
+						"type": "uint64"
+					},
+					{
+						"internalType": "uint64",
+						"name": "Aura",
+						"type": "uint64"
+					},
+					{
+						"internalType": "string",
+						"name": "LogLine",
+						"type": "string"
+					}
+				],
+				"name": "Log",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "Luo",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "Omega",
+				"outputs": [
+					{
+						"internalType": "uint64",
+						"name": "",
+						"type": "uint64"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "Omicron",
+				"outputs": [
+					{
+						"internalType": "uint64",
+						"name": "",
+						"type": "uint64"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "On",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "address",
+								"name": "Phi",
+								"type": "address"
+							},
+							{
+								"internalType": "contract SHA",
+								"name": "Mu",
+								"type": "address"
+							},
+							{
+								"internalType": "uint64",
+								"name": "Xi",
+								"type": "uint64"
+							},
+							{
+								"internalType": "uint64",
+								"name": "Pi",
+								"type": "uint64"
+							},
+							{
+								"internalType": "contract SHIO",
+								"name": "Shio",
+								"type": "address"
+							},
+							{
+								"internalType": "uint64",
+								"name": "Ring",
+								"type": "uint64"
+							},
+							{
+								"internalType": "uint64",
+								"name": "Omicron",
+								"type": "uint64"
+							},
+							{
+								"internalType": "uint64",
+								"name": "Omega",
+								"type": "uint64"
+							}
+						],
+						"internalType": "struct Bao",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "chatline",
+						"type": "string"
+					}
+				],
+				"name": "OperatorSendMSG",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "Prime",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_t",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_a",
+						"type": "uint256"
+					}
+				],
+				"name": "Purchase",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "Qu",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint64",
+						"name": "Eta",
+						"type": "uint64"
+					}
+				],
+				"name": "React",
+				"outputs": [
+					{
+						"internalType": "uint64",
+						"name": "",
+						"type": "uint64"
+					},
+					{
+						"internalType": "uint64",
+						"name": "",
+						"type": "uint64"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint64",
+						"name": "Soul",
+						"type": "uint64"
+					},
+					{
+						"internalType": "uint64",
+						"name": "Epsilon",
+						"type": "uint64"
+					}
+				],
+				"name": "ReactUser",
+				"outputs": [
+					{
+						"internalType": "uint64",
+						"name": "",
+						"type": "uint64"
+					},
+					{
+						"internalType": "uint64",
+						"name": "",
+						"type": "uint64"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "Reactor",
+				"outputs": [
+					{
+						"internalType": "contract LIBCOREREACTIONS",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_t",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_a",
+						"type": "uint256"
+					}
+				],
+				"name": "Redeem",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "newName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "newSymbol",
+						"type": "string"
+					}
+				],
+				"name": "Rename",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "Saat",
+				"outputs": [
+					{
+						"internalType": "uint64",
+						"name": "",
+						"type": "uint64"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "Shio",
+				"outputs": [
+					{
+						"internalType": "contract SHIO",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "Type",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "UserToken",
+						"type": "address"
+					}
+				],
+				"name": "VerifyUserTokenPermissions",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "Void",
+				"outputs": [
+					{
+						"internalType": "contract VOID",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "addOwner",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "spender",
+						"type": "address"
+					}
+				],
+				"name": "allowance",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "spender",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "value",
+						"type": "uint256"
+					}
+				],
+				"name": "approve",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "balanceOf",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "decimals",
+				"outputs": [
+					{
+						"internalType": "uint8",
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "mintToCap",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "name",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "cOwner",
+						"type": "address"
+					}
+				],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "toRemove",
+						"type": "address"
+					}
+				],
+				"name": "renounceOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "symbol",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "totalSupply",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "value",
+						"type": "uint256"
+					}
+				],
+				"name": "transfer",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "from",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "value",
+						"type": "uint256"
+					}
+				],
+				"name": "transferFrom",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"solidity/dysnomia/interfaces/12b_chointerface.sol": "CHOINTERFACE"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 100
+		},
+		"remappings": []
+	},
+	"sources": {
+		"solidity/dysnomia/include/bao.sol": {
+			"keccak256": "0x257e4a9884075b125c407aec08e906b6dfd2339b178bf45d930720bc6c5250df",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://0c74053cecc15f555899074804d722a1dab90bda27cbc6a30e74423d49afa891",
+				"dweb:/ipfs/QmbxpP1tWYT7EdMDRyMB983Km3rhL3urkjn3ASYt5LjWow"
+			]
+		},
+		"solidity/dysnomia/include/fa.sol": {
+			"keccak256": "0x66d1f7bcc4941ed09f9df1e7a97eeeeed584fe327a420d258dbb2e258c91cf85",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://c5573edb127e2fe5ee52470eb9b4f8f741bba90e5a007a7f0de9be901810ed13",
+				"dweb:/ipfs/QmWTNsPbRTDypizippFjT8GyPj2Wz5QKTT1TwHrUdGn9gS"
+			]
+		},
+		"solidity/dysnomia/include/user.sol": {
+			"keccak256": "0xb8e83f4ba819402a9cab5c800fdf5a9a694d4e3600639db159353f0e102c2a70",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://99ef2deeb854df4dd326e7d4ceb7668a1a22ad504d5ec163f34c6c832c7a019f",
+				"dweb:/ipfs/QmQVtdPWMC3xcHxzCwvwyRv233GnGFKcW6m3S6sNWhR4CE"
+			]
+		},
+		"solidity/dysnomia/interfaces/01b_dysnomia.sol": {
+			"keccak256": "0xfe7f0fc8561bbc1e80e368a177256ea7d42649202a25cd012bfe38c53eeada95",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://4fb5dd5d2df59171aa144e1ce2b3e348f4bbc6085abdb5a4ff804973ee71dbf5",
+				"dweb:/ipfs/QmaGy46s3huzXe5NGDEz2kbfoBtiwvNXQmToPpWkf2BuBJ"
+			]
+		},
+		"solidity/dysnomia/interfaces/02b_shainterface.sol": {
+			"keccak256": "0x813eee75715c2ce4bdd71946a508804e4d9474008eccc2f7c81b71721672f15d",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://3f3b48664fe7a9749c2a841aa339899e848ef5ce71bc5fce4243de9c2f36ce26",
+				"dweb:/ipfs/QmawYrzzzFzfTQ8bsmKDTukLKT7LjskkVikKWn8DFXTvcF"
+			]
+		},
+		"solidity/dysnomia/interfaces/02d_shafactoryinterface.sol": {
+			"keccak256": "0x749fd66e5c1de1d991ca7ad70dd91ed9a37428eda50cd9c34c7e3ad86914b316",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://046637a4260fdea88ef1200461a112997a9f87820c1dbf62ea0e2727439cfc2c",
+				"dweb:/ipfs/QmQiSminrK6uMmMg92joo3qtEptnyQH22DCWP3V4Djtvgs"
+			]
+		},
+		"solidity/dysnomia/interfaces/03b_shiointerface.sol": {
+			"keccak256": "0x294ce7ce70411838880e2d840e279bc1b5fff7c4c75f0e682d528b0e416d06fe",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://52b93c2123ef41aa7f8936807f0c68f353172c11effe5acf7b9dd1f0e3cedb5b",
+				"dweb:/ipfs/QmQ9JZ9b5DhpuTEHb1mSPZ817s7VXe6FwBTyvwgxJ4hjZS"
+			]
+		},
+		"solidity/dysnomia/interfaces/03d_shiofactoryinterface.sol": {
+			"keccak256": "0x4115646151c3c827f462c93aa34dd670551c1daae913bae767fe964580593f3e",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://c168a3e4d5b72a4b08fd2050f6b839dda36636669b6d7b73099497afb775f1a6",
+				"dweb:/ipfs/QmcVLcSzq21Kpm7YrkPdsmg8oTFbZteaaKzFD4m4qhCyLj"
+			]
+		},
+		"solidity/dysnomia/interfaces/04b_yiinterface.sol": {
+			"keccak256": "0xc8f2233b7f9cfb2564e2e9c0b2667f1745eb80fa41e8fd1d0786cd26e394b9af",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://772197c890b3335afb94fb8def274e4972bddeb148318205f79d8b2e7b1d08a4",
+				"dweb:/ipfs/Qmbph5aFVqAGSmCRYabCNFULPXwiyB2y2RqaHnThbL5VZw"
+			]
+		},
+		"solidity/dysnomia/interfaces/05b_zhenginterface.sol": {
+			"keccak256": "0xc86e01717f9d8f7e61eb7e6e633da3c061dd54958c327a1c42387dc10599c541",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://fa74921eaef5cf01889c56c39a23517bf38cc300ddf2bf243b1db4cedaf8efc4",
+				"dweb:/ipfs/QmXgpfPJ9Pv1HJxySJQsJ7tGHZtSNDqg6wFBvjERjXDvdp"
+			]
+		},
+		"solidity/dysnomia/interfaces/06b_zhouinterface.sol": {
+			"keccak256": "0x0fae86b20f6d3814057968781608fdfe566cc2e4ce7fed950583dc346287fa6e",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://ae1cdc95e4f7baa6d2a8abcc32dcd0863778d496c9efd870744da332b436a099",
+				"dweb:/ipfs/Qmd1QEanCryLzXvWKaA2MHLb9p5sYwmytEPYKito7Y9bhc"
+			]
+		},
+		"solidity/dysnomia/interfaces/07b_yauinterface.sol": {
+			"keccak256": "0xd4c13594972babd83d1430fc54266b81418ab63ad4473f2a0622870e8865ea0a",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://72db750a77b8ff57b74b5a5ca091e73f6d35f63ac7b2c1375c8e05cf843f9989",
+				"dweb:/ipfs/QmXyABeNvPkAYE4S21KzKk4pWq2kQNCnp4JgKPNuEdvg1v"
+			]
+		},
+		"solidity/dysnomia/interfaces/08b_yanginterface.sol": {
+			"keccak256": "0x43a024084fc62f707aa484a9aa88b9d7e97ef481069bf72df9c91daaaa8847fa",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://0a6b279ec60188097c34d0d6f028048b8a74c1f4bcf30a0dee5c522eac559b62",
+				"dweb:/ipfs/QmTWZf11QhHnxJsRZoWG7ieTVFakGkSeXb5sNdahGktfLT"
+			]
+		},
+		"solidity/dysnomia/interfaces/09b_siuinterface.sol": {
+			"keccak256": "0xb03cb350e95c399f1d6dc4bed5ed2e4a365afc413f86d63865cf4dcb949e7826",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://63ded8a74cf207b67ced7fee1e0e86854d993a89e056d4fc5b21bcf045daadc0",
+				"dweb:/ipfs/QmdM5aUyu3V8YKBobVoE62ZNnxSj1KYwdzpYcmhdEGdETW"
+			]
+		},
+		"solidity/dysnomia/interfaces/10b_voidinterface.sol": {
+			"keccak256": "0x8510b9a538b507219e169020fa6c335ce3b5fcca02fb2ae7745a6ffa27870884",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://e11becd3462fcb72d4306e7f049b3ae45e2f3d2b0b529684de2c6f6b1c4c2b37",
+				"dweb:/ipfs/QmcaLyRW88LJoG7aDHZdqQtsDVeSMXNCDusksXsLvtrtAH"
+			]
+		},
+		"solidity/dysnomia/interfaces/11b_lauinterface.sol": {
+			"keccak256": "0x0acd0ae4f6a2a9a7d6ff0f5decc6fc7399e65e7b4dd6a5bf602cb34cec5c380b",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://ab5342f7889af5c5a2e8c0ae85d3c5407aaef67ad54653fd854b03464bd45472",
+				"dweb:/ipfs/QmRZMovjVAZ8qWGtVpLTWjzQrVdrwW8sPtV22eSw2nvghC"
+			]
+		},
+		"solidity/dysnomia/interfaces/12b_chointerface.sol": {
+			"keccak256": "0xc9147ca5e4b1f63f33a88fcac0ea62b7390a52fcf3475cc0b3a1f158adec60d5",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://6932792c6ecdb29d3c2c9bd92973fef16c3ed7f72a088d91c7e858f376773ca9",
+				"dweb:/ipfs/QmQbv64Lbz62GnrvLzvhsGCePe8uQapb7kBzPZHafsYt5a"
+			]
+		},
+		"solidity/dysnomia/interfaces/atropaMath.sol": {
+			"keccak256": "0x1646a0081524a194b81f22bee760e8224749f8f40e8fc6d94c5f4a1528db6691",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://e2a5eebfb8e58490f478b50bd5d7e9e98602acab6cac2280bcab7561d57449c9",
+				"dweb:/ipfs/QmZgeUAfEAQjzxgHrq1yhP5XXfxjSMxQmtkGS33sNFNxEf"
+			]
+		},
+		"solidity/dysnomia/interfaces/libcorereactions.sol": {
+			"keccak256": "0xfdf72817d5d98508d36b2759bffc0e9b448dae1c113db4a0fa0a15eb6dbecee2",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://7bbb1c3e2beb64ddccaf90a5e0ce1aa17432a61f55559ed81bc6046ecac22c5d",
+				"dweb:/ipfs/QmPt8G5HMV8dqo5tY71nmvxP8etbbky3yFXKWBntp4kbBA"
+			]
+		},
+		"solidity/dysnomia/interfaces/libstrings.sol": {
+			"keccak256": "0xbe7be3de16314577c066b6f5c4bc6bfd6798fdb5a1d565b4b9246c71f2e61b21",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://ad556a04175ea196b6fdf1eadd9aff37fae44df97ecd5d7c6425d71b68da36aa",
+				"dweb:/ipfs/QmYsD8UXPjnufmxUVXxwFsDPmy9dyvWFSN8hK1FYwv9Ger"
+			]
+		}
+	},
+	"version": 1
+}

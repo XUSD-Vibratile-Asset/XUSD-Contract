@@ -1,0 +1,166 @@
+{
+	"id": "a4540fdc3c2c38710ce30d3b0b058c53",
+	"_format": "hh-sol-build-info-1",
+	"solcVersion": "0.8.27",
+	"solcLongVersion": "0.8.27+commit.40a35a09",
+	"input": {
+		"language": "Solidity",
+		"sources": {
+			"solidity/dysnomia/include/uservote.sol": {
+				"content": "// SPDX-License-Identifier: Sharia\npragma solidity ^0.8.21;\n\nstruct UserVote {\n    uint16 Vote;\n    uint8 Submissions;\n    uint64 Round;\n}"
+			}
+		},
+		"settings": {
+			"optimizer": {
+				"enabled": true,
+				"runs": 100
+			},
+			"outputSelection": {
+				"*": {
+					"": [
+						"ast"
+					],
+					"*": [
+						"abi",
+						"metadata",
+						"devdoc",
+						"userdoc",
+						"storageLayout",
+						"evm.legacyAssembly",
+						"evm.bytecode",
+						"evm.deployedBytecode",
+						"evm.methodIdentifiers",
+						"evm.gasEstimates",
+						"evm.assembly"
+					]
+				}
+			},
+			"remappings": []
+		}
+	},
+	"output": {
+		"sources": {
+			"solidity/dysnomia/include/uservote.sol": {
+				"ast": {
+					"absolutePath": "solidity/dysnomia/include/uservote.sol",
+					"exportedSymbols": {
+						"UserVote": [
+							8
+						]
+					},
+					"id": 9,
+					"license": "Sharia",
+					"nodeType": "SourceUnit",
+					"nodes": [
+						{
+							"id": 1,
+							"literals": [
+								"solidity",
+								"^",
+								"0.8",
+								".21"
+							],
+							"nodeType": "PragmaDirective",
+							"src": "35:24:0"
+						},
+						{
+							"canonicalName": "UserVote",
+							"id": 8,
+							"members": [
+								{
+									"constant": false,
+									"id": 3,
+									"mutability": "mutable",
+									"name": "Vote",
+									"nameLocation": "90:4:0",
+									"nodeType": "VariableDeclaration",
+									"scope": 8,
+									"src": "83:11:0",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint16",
+										"typeString": "uint16"
+									},
+									"typeName": {
+										"id": 2,
+										"name": "uint16",
+										"nodeType": "ElementaryTypeName",
+										"src": "83:6:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint16",
+											"typeString": "uint16"
+										}
+									},
+									"visibility": "internal"
+								},
+								{
+									"constant": false,
+									"id": 5,
+									"mutability": "mutable",
+									"name": "Submissions",
+									"nameLocation": "106:11:0",
+									"nodeType": "VariableDeclaration",
+									"scope": 8,
+									"src": "100:17:0",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint8",
+										"typeString": "uint8"
+									},
+									"typeName": {
+										"id": 4,
+										"name": "uint8",
+										"nodeType": "ElementaryTypeName",
+										"src": "100:5:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint8",
+											"typeString": "uint8"
+										}
+									},
+									"visibility": "internal"
+								},
+								{
+									"constant": false,
+									"id": 7,
+									"mutability": "mutable",
+									"name": "Round",
+									"nameLocation": "130:5:0",
+									"nodeType": "VariableDeclaration",
+									"scope": 8,
+									"src": "123:12:0",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint64",
+										"typeString": "uint64"
+									},
+									"typeName": {
+										"id": 6,
+										"name": "uint64",
+										"nodeType": "ElementaryTypeName",
+										"src": "123:6:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint64",
+											"typeString": "uint64"
+										}
+									},
+									"visibility": "internal"
+								}
+							],
+							"name": "UserVote",
+							"nameLocation": "68:8:0",
+							"nodeType": "StructDefinition",
+							"scope": 9,
+							"src": "61:77:0",
+							"visibility": "public"
+						}
+					],
+					"src": "35:103:0"
+				},
+				"id": 0
+			}
+		}
+	}
+}

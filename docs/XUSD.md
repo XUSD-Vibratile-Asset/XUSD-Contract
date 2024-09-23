@@ -2,11 +2,11 @@
 
 
 
-> ERC20Base
 
 
 
-*Basic ERC20 implementation with burn functionality and registry integration.*
+
+
 
 ## Methods
 
@@ -30,18 +30,18 @@ function Rewardtransfer(address to, uint256 amount) external nonpayable
 ### allowance
 
 ```solidity
-function allowance(address owner, address spender) external view returns (uint256)
+function allowance(address _owner, address spender) external view returns (uint256)
 ```
 
 
 
-*Returns the remaining number of tokens that `spender` will be allowed to spend on behalf of `owner` through {transferFrom}. This is zero by default. This value changes when {approve} or {transferFrom} are called.*
+
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| owner | address | undefined |
+| _owner | address | undefined |
 | spender | address | undefined |
 
 #### Returns
@@ -112,10 +112,10 @@ function burnAddress() external view returns (address)
 |---|---|---|
 | _0 | address | undefined |
 
-### burnBalance
+### burnBalanceContract
 
 ```solidity
-function burnBalance(address user) external view returns (uint256)
+function burnBalanceContract(address contractAddr) external view returns (uint256)
 ```
 
 
@@ -126,7 +126,7 @@ function burnBalance(address user) external view returns (uint256)
 
 | Name | Type | Description |
 |---|---|---|
-| user | address | undefined |
+| contractAddr | address | undefined |
 
 #### Returns
 
@@ -134,10 +134,10 @@ function burnBalance(address user) external view returns (uint256)
 |---|---|---|
 | _0 | uint256 | undefined |
 
-### burnBalanceOrigin
+### burnBalanceEOA
 
 ```solidity
-function burnBalanceOrigin(address user) external view returns (uint256)
+function burnBalanceEOA(address user) external view returns (uint256)
 ```
 
 
@@ -195,6 +195,96 @@ function decreaseAllowance(address spender, uint256 subtractedValue) external no
 | Name | Type | Description |
 |---|---|---|
 | _0 | bool | undefined |
+
+### getFullBurnHistoryContract
+
+```solidity
+function getFullBurnHistoryContract(address contractAddr) external view returns (uint32[] blocks, uint224[] burns)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| contractAddr | address | undefined |
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| blocks | uint32[] | undefined |
+| burns | uint224[] | undefined |
+
+### getFullBurnHistoryEOA
+
+```solidity
+function getFullBurnHistoryEOA(address user) external view returns (uint32[] blocks, uint224[] burns)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| user | address | undefined |
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| blocks | uint32[] | undefined |
+| burns | uint224[] | undefined |
+
+### getLatestBurnContract
+
+```solidity
+function getLatestBurnContract(address contractAddr) external view returns (uint224)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| contractAddr | address | undefined |
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint224 | undefined |
+
+### getLatestBurnEOA
+
+```solidity
+function getLatestBurnEOA(address user) external view returns (uint224)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| user | address | undefined |
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint224 | undefined |
 
 ### increaseAllowance
 
@@ -275,22 +365,50 @@ function name() external view returns (string)
 |---|---|---|
 | _0 | string | undefined |
 
-### registry
+### owner
 
 ```solidity
-function registry() external view returns (contract VibeRegistry)
+function owner() external view returns (address)
 ```
 
 
 
-
+*Returns the address of the current owner.*
 
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | contract VibeRegistry | undefined |
+| _0 | address | undefined |
+
+### renounceOwnership
+
+```solidity
+function renounceOwnership() external nonpayable
+```
+
+
+
+*Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner.*
+
+
+### setExclusionFromTax
+
+```solidity
+function setExclusionFromTax(address account, bool status) external nonpayable
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| account | address | undefined |
+| status | bool | undefined |
 
 ### setRegistry
 
@@ -406,6 +524,22 @@ function transferFrom(address from, address to, uint256 amount) external nonpaya
 |---|---|---|
 | _0 | bool | undefined |
 
+### transferOwnership
+
+```solidity
+function transferOwnership(address newOwner) external nonpayable
+```
+
+
+
+*Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.*
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| newOwner | address | undefined |
+
 
 
 ## Events
@@ -428,6 +562,23 @@ event Approval(address indexed owner, address indexed spender, uint256 value)
 | spender `indexed` | address | undefined |
 | value  | uint256 | undefined |
 
+### OwnershipTransferred
+
+```solidity
+event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| previousOwner `indexed` | address | undefined |
+| newOwner `indexed` | address | undefined |
+
 ### Transfer
 
 ```solidity
@@ -446,5 +597,51 @@ event Transfer(address indexed from, address indexed to, uint256 value)
 | to `indexed` | address | undefined |
 | value  | uint256 | undefined |
 
+
+
+## Errors
+
+### CheckpointUnorderedInsertion
+
+```solidity
+error CheckpointUnorderedInsertion()
+```
+
+
+
+*A value was attempted to be inserted on a past checkpoint.*
+
+
+### OwnableInvalidOwner
+
+```solidity
+error OwnableInvalidOwner(address owner)
+```
+
+
+
+*The owner is not a valid owner account. (eg. `address(0)`)*
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| owner | address | undefined |
+
+### OwnableUnauthorizedAccount
+
+```solidity
+error OwnableUnauthorizedAccount(address account)
+```
+
+
+
+*The caller account is not authorized to perform an operation.*
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| account | address | undefined |
 
 

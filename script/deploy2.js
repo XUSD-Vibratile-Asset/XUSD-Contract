@@ -8,32 +8,128 @@ const axios = require('axios');
 async function deployRouter() {
   console.log("Starting deployment of Router...");
 
-  let provider = new ethers.JsonRpcProvider(`http://127.0.0.1:8545/`);
-  const signer = new ethers.Wallet(process.env.PK, provider);
-  const signer2 = new ethers.Wallet(process.env.PK1, provider);
+ let provider = new ethers.JsonRpcProvider(`https://rpc.pulsechain.com`);
+   const signer = new ethers.Wallet(process.env.PK, provider);
+  // const signer2 = new ethers.Wallet(process.env.PK1, provider);
 
-const toker = "0xc89d5330C672CFb8957B0120Ac3Ec0C2A7295a62"
-const toke = await ethers.getContractFactory(`XUSD`);
+// const toker = "0xc89d5330C672CFb8957B0120Ac3Ec0C2A7295a62"
+// const toke = await ethers.getContractFactory(`XUSD`);
 
-const class29 = await ethers.getContractFactory(`Reward`);
-const exClass = await ethers.getContractFactory(`Exchange`);
-const acc = ethers.getContractFactory("HierarchicalAccessControl")
-const access =  (await acc).attach("0xE6A75ED9207436aBEC421ded4bBbB1B9156cAd95")
-const tokerc = toke.attach("0xc89d5330C672CFb8957B0120Ac3Ec0C2A7295a62")
-// const token = ethers.getContractAt("0xfc5b27244EB01d34E019f94cbC053DC8F91aE6Da")
- const reward = class29.attach("0x571A9Fc6eb082249dE2Cd11b32D96868444B6000")
+// const class29 = await ethers.getContractFactory(`Reward`);
+// const exClass = await ethers.getContractFactory(`Exchange`);
+// const acc = ethers.getContractFactory("HierarchicalAccessControl")
+// const access =  (await acc).attach("0xE6A75ED9207436aBEC421ded4bBbB1B9156cAd95")
+// const tokerc = toke.attach("0xc89d5330C672CFb8957B0120Ac3Ec0C2A7295a62")
+// // const token = ethers.getContractAt("0xfc5b27244EB01d34E019f94cbC053DC8F91aE6Da")
+//  const reward = class29.attach("0x571A9Fc6eb082249dE2Cd11b32D96868444B6000")
 //   await access.assignRank(toker, 4);
 //   console.log("Access rank assigned to XUSD.");
-
- 
-
-// //   await access.assignRank("0x2Bc82B634B146aCaf02785d56A6c3B74DCb20343", 4);
-// //   console.log("Access rank assigned to ClassRegistry.");
-//   let moo5o = {
+// const libe2 = await ethers.getContractFactory('LibRegistryAdd');
+// const lib22C = await libe2.deploy();
+// const exClass = await ethers.getContractFactory('WhitelistTransactionTracker', {
+//   libraries: { LibRegistryAdd: await lib22C.getAddress() },
+// });
+// const exxclass = await exClass.deploy('0xdB117EE426EA72A4A16Bc1f6a791bA9B0e8B8387', "0x66bF18702FCd4975Acf978a135bD65ACf9147EfA", {
+//   creatorAddress: signer.address,
+//   info: "moo",
+//   level: 0,
+// });
+// await exxclass.waitForDeployment();
+//   let mooo = {
 //     creatorAddress: signer.address,
-//     info: "moo",
+//     info: "Peak Hour vibe applicator",
 //     level: 0
 //   }
+//   const libe2 = await ethers.getContractFactory('LibRegistryAdd');
+//   const lib22C = await libe2.deploy();
+//   await lib22C.waitForDeployment();
+// const classReg = await ethers.getContractFactory(`WhitelistTransactionTracker`, {
+//   libraries: { LibRegistryAdd: await lib22C.getAddress(),
+ 
+//    },
+// });
+// const exxclass = await classReg.deploy('0xdB117EE426EA72A4A16Bc1f6a791bA9B0e8B8387', '0x66bF18702FCd4975Acf978a135bD65ACf9147EfA', {
+//   creatorAddress: signer.address,
+//   info: "moo",
+//   level: 0,
+// });
+// await exxclass.waitForDeployment();
+// console.log(`Exchange deployed at: ${await exxclass.getAddress()}`);
+// const lib2 = await ethers.getContractFactory('LibRegistry');
+// const lib2C = await lib2.deploy();
+// const AccessLib = await ethers.getContractFactory('AuthLib');
+// const accessLib = await AccessLib.deploy({
+//   maxFeePerGas: 1383944817052937
+// });
+// await accessLib.waitForDeployment(); // In ethers v6, `deployed()` is replaced with `waitForDeployment`
+// console.log(`AuthLib deployed at: ${await accessLib.getAddress()}`);
+
+
+
+
+//const lib2 = await ethers.getContractFactory('LibRegistry');
+const lib3 = await ethers.getContractFactory('AtropaMath');
+const libV = await ethers.getContractFactory('VibeLibRegistry');
+const libe2 = await ethers.getContractFactory('LibRegistryAdd');
+const toke = await ethers.getContractFactory('XUSD');
+
+
+
+// const lib22C = await libe2.deploy();
+// await lib22C.waitForDeployment();
+// console.log(`LibRegistryAdd deployed at: ${await lib22C.getAddress()}`);
+
+
+let m = {
+   dailyMax: BigInt(3_000_000 * 1e18), // Max tokens that can be distributed daily
+   dailyMaxPerLp: BigInt(500_000 * 1e18),
+   dailyMaxPerUserLp:BigInt(10_000 * 1e18),
+   swapMultiplier: 1000,
+   vibeLimit: 450,
+   randomMultiplier: 100,
+   divisor: 1000,
+}
+
+
+const exClass = await ethers.getContractFactory('RewardDistributor', {
+  libraries: { LibRegistryAdd: '0xf3998D1f791346151eD90FCA2D06E37466874AE3',
+  
+   },
+ });
+ const VMREQ = await ethers.getContractFactory('VMREQ');
+
+ const vm = await VMREQ.deploy();
+ await vm.waitForDeployment()
+
+// console.log(await vm.getAddress())
+ const exxclass =  exClass.deploy( '0x66bF18702FCd4975Acf978a135bD65ACf9147EfA', '0xdB117EE426EA72A4A16Bc1f6a791bA9B0e8B8387', await vm.getAddress(), {
+  creatorAddress: signer.address,
+  info: "moo",
+  level: 0,
+})
+
+ //console.log(await exxclass.setVariablesNumbers(m))
+
+// // const rewardDistributor = await RewardDistributor.deploy("50000000000", '0x66bF18702FCd4975Acf978a135bD65ACf9147EfA', '0xdB117EE426EA72A4A16Bc1f6a791bA9B0e8B8387', '0xEf606258566593836106674c0e0574694A4871d3');
+// // await rewardDistributor.waitForDeployment();
+// console.log(`Exchange deployed at: ${await exxclass.getAddress()}`);
+// // console.log(await rewardDistributor.getAddress())
+
+const accessManagerFactory = await ethers.getContractFactory('AccessManager', {
+  libraries: {
+    AuthLib: '0x614f80771063a18593c5bada879729E8ED98374A',
+  },
+});
+ const accessManager =  accessManagerFactory.attach('0xdB117EE426EA72A4A16Bc1f6a791bA9B0e8B8387');
+
+ await accessManager.grantRole(await exxclass.getAddress(), 4);
+
+//await accessManager.grantRole(await rewardDistributor.getAddress(), 4);
+
+//await exxclass.whitelistAddress('0xDAb2915b8940BD3B4Bc6BF5Ac80Fa4e558057321', "0x165C3410fC91EF562C50559f7d2289fEbed552d9");
+// //   await access.assignRank("0x2Bc82B634B146aCaf02785d56A6c3B74DCb20343", 4);
+  // console.log(await exxclass.getAddress());
+
 
 // //  await tokerc.setRegistry("0x2Bc82B634B146aCaf02785d56A6c3B74DCb20343");
 // // await tokerc.transfer(await reward.getAddress(), ethers.parseEther("100000"));
@@ -41,19 +137,19 @@ const tokerc = toke.attach("0xc89d5330C672CFb8957B0120Ac3Ec0C2A7295a62")
 //  console.log(await exxclass.getAddress());
 //  await reward.setExchangeContract(await exxclass.getAddress())
 
-let mooo = {
-  creatorAddress: signer.address,
-  info: "moo",
-  level: 1
-}
- const exClassw = await ethers.getContractFactory(`RandomizedVibeCalculator`);
- const vibes =  await exClassw.deploy(100, 1600,  mooo, await access.getAddress())
-console.log(await vibes.getAddress())
-//  await toker.transfer(await reward.getAddress(), ethers.parseEther("100000"));
-//   console.log(`GenesisRewardsModule deployed at: ${await reward.getAddress()}`);
-//  const exxclass =  await exClass.deploy(await access.getAddress(), toker, await reward.getAddress(), moo5o)
-//   await reward.setExchangeContract(await exxclass.getAddress())
-//   await exxclass.addToWhiteListAdmin(signer.address)
+// let mooo = {
+//   creatorAddress: signer.address,
+//   info: "moo",
+//   level: 1
+// }
+//  const exClassw = await ethers.getContractFactory(`RandomizedVibeCalculator`);
+//  const vibes =  await exClassw.deploy(100, 1600,  mooo, await access.getAddress())
+// console.log(await vibes.getAddress())
+// //  await toker.transfer(await reward.getAddress(), ethers.parseEther("100000"));
+// //   console.log(`GenesisRewardsModule deployed at: ${await reward.getAddress()}`);
+// //  const exxclass =  await exClass.deploy(await access.getAddress(), toker, await reward.getAddress(), moo5o)
+// //   await reward.setExchangeContract(await exxclass.getAddress())
+// //   await exxclass.addToWhiteListAdmin(signer.address)
 //   console.log("XUSD registry set.");
 //   // await toker.transfer(signer2.address, ethers.parseEther("100"));
 //   // await toker.transfer(signer2.address, ethers.parseEther("100"));

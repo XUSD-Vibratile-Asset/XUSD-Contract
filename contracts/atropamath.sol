@@ -40,7 +40,7 @@ library AtropaMath  {
     }
 
 
-    function hashWithHash(address a, uint b) public pure returns (uint256 hash) {        
+    function hashWithHash(address a, uint b) public returns (uint256 hash) {        
         hash = 0;
         uint160 _a = uint160(a);
         uint160 _b = uint160(b) / 15;
@@ -50,7 +50,7 @@ library AtropaMath  {
                 _b = _b/2;
             }
         }
-        //return modExp(uint256(uint160(a)), uint256(uint160(b)), MotzkinPrime);
+        return modExp(uint256(uint160(a)), uint256(uint160(b)), MotzkinPrime);
     }
 
 

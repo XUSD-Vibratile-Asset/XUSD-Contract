@@ -6,7 +6,7 @@
 
 
 
-*ERC721 token representing a VibePass, with additional features for handling access control and token burning.*
+*ERC721 token representing a VibePass, with additional features for handling access control, token burning, and more. The contract integrates with VibeRegistry for vibe-based logic and OneSwap for purchase transactions.*
 
 ## Methods
 
@@ -16,7 +16,7 @@
 function UserUpdate(address user) external nonpayable
 ```
 
-
+Update a user&#39;s vote balance based on burn amount.
 
 
 
@@ -24,7 +24,7 @@ function UserUpdate(address user) external nonpayable
 
 | Name | Type | Description |
 |---|---|---|
-| user | address | undefined |
+| user | address | The address of the user to update. |
 
 ### VibReg
 
@@ -82,22 +82,16 @@ function balanceOf(address owner) external view returns (uint256)
 |---|---|---|
 | _0 | uint256 | undefined |
 
-### getAllProtocolMessage
+### checkRank
 
 ```solidity
-function getAllProtocolMessage() external view returns (string[])
+function checkRank() external nonpayable
 ```
 
+Check if the caller qualifies for the gladiator rank and update rank if applicable.
 
 
 
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | string[] | undefined |
 
 ### getApproved
 
@@ -127,7 +121,7 @@ function getApproved(uint256 tokenId) external view returns (address)
 function getBurnAmounts(uint256 id) external view returns (uint256)
 ```
 
-
+Get the current burn amount of the VibePass.
 
 
 
@@ -135,13 +129,13 @@ function getBurnAmounts(uint256 id) external view returns (uint256)
 
 | Name | Type | Description |
 |---|---|---|
-| id | uint256 | undefined |
+| id | uint256 | The token ID of the VibePass. |
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined |
+| _0 | uint256 | The current burn amount. |
 
 ### getBurnAmountsOrigin
 
@@ -149,7 +143,7 @@ function getBurnAmounts(uint256 id) external view returns (uint256)
 function getBurnAmountsOrigin(uint256 id) external view returns (uint256)
 ```
 
-
+Get the original burn amount of the VibePass.
 
 
 
@@ -157,30 +151,13 @@ function getBurnAmountsOrigin(uint256 id) external view returns (uint256)
 
 | Name | Type | Description |
 |---|---|---|
-| id | uint256 | undefined |
+| id | uint256 | The token ID of the VibePass. |
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined |
-
-### getProtocolMessage
-
-```solidity
-function getProtocolMessage() external view returns (string)
-```
-
-
-
-
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | string | undefined |
+| _0 | uint256 | The original burn amount. |
 
 ### getUsername
 
@@ -188,7 +165,7 @@ function getProtocolMessage() external view returns (string)
 function getUsername(address user) external view returns (string)
 ```
 
-
+Get the username associated with a user&#39;s VibePass.
 
 
 
@@ -196,13 +173,13 @@ function getUsername(address user) external view returns (string)
 
 | Name | Type | Description |
 |---|---|---|
-| user | address | undefined |
+| user | address | The address of the user. |
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | string | undefined |
+| _0 | string | The username of the user&#39;s VibePass. |
 
 ### isApprovedForAll
 
@@ -233,9 +210,9 @@ function isApprovedForAll(address owner, address operator) external view returns
 function mintPass() external nonpayable
 ```
 
-Mint a new VibePass NFT for the caller if they meet the required rank
+Mint a new VibePass NFT for the caller if they meet the required rank.
 
-
+*User can only hold one VibePass, and funds are transferred from OneSwap on minting.*
 
 
 ### name
@@ -352,18 +329,18 @@ function safeTransferFrom(address from, address to, uint256 tokenId) external no
 function safeTransferFrom(address from, address to, uint256 tokenId, bytes data) external nonpayable
 ```
 
-Safely transfers the VibePass from one user to another
+Safely transfers the VibePass from one user to another.
 
-
+*Only callable by the Consul.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| from | address | The address of the current owner |
-| to | address | The address of the new owner |
-| tokenId | uint256 | The token ID to transfer |
-| data | bytes | Additional data for the transfer |
+| from | address | The address of the current owner. |
+| to | address | The address of the new owner. |
+| tokenId | uint256 | The token ID to transfer. |
+| data | bytes | Additional data for the transfer. |
 
 ### setApprovalForAll
 
@@ -388,47 +365,15 @@ function setApprovalForAll(address operator, bool approved) external nonpayable
 function setGladiator(int256 vibes) external nonpayable
 ```
 
+Set the gladiator rank required for VibePass minting.
 
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| vibes | int256 | undefined |
-
-### setProtocolMessage
-
-```solidity
-function setProtocolMessage(string message) external nonpayable
-```
-
-
-
-
+*Only callable by the Consul.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| message | string | undefined |
-
-### setRegistry
-
-```solidity
-function setRegistry(address registry) external nonpayable
-```
-
-Set the address of the access control registry
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| registry | address | The new access control registry address |
+| vibes | int256 | Minimum vibes required for gladiator rank. |
 
 ### setURI
 
@@ -436,16 +381,16 @@ Set the address of the access control registry
 function setURI(address user, string Url) external nonpayable
 ```
 
+Set the URI for a VibePass holder.
 
-
-
+*Only callable by the Consul.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| user | address | undefined |
-| Url | string | undefined |
+| user | address | The address of the user whose URI is being updated. |
+| Url | string | The new URI. |
 
 ### setUserName
 
@@ -453,7 +398,7 @@ function setURI(address user, string Url) external nonpayable
 function setUserName(string userName) external nonpayable
 ```
 
-
+Set the username for the caller&#39;s VibePass.
 
 
 
@@ -461,7 +406,7 @@ function setUserName(string userName) external nonpayable
 
 | Name | Type | Description |
 |---|---|---|
-| userName | string | undefined |
+| userName | string | The new username. |
 
 ### setXusd
 
@@ -469,15 +414,15 @@ function setUserName(string userName) external nonpayable
 function setXusd(address _xusd) external nonpayable
 ```
 
-Set the address of the XUSD token
+Set the address of the XUSD token.
 
-
+*Only callable by the Consul.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| _xusd | address | The new XUSD token address |
+| _xusd | address | The new XUSD token address. |
 
 ### supportsInterface
 
@@ -546,7 +491,7 @@ function tokenByIndex(uint256 index) external view returns (uint256)
 function tokenIdByOwner(address _owner) external view returns (uint256)
 ```
 
-
+Get the token ID owned by a specific user.
 
 
 
@@ -554,13 +499,13 @@ function tokenIdByOwner(address _owner) external view returns (uint256)
 
 | Name | Type | Description |
 |---|---|---|
-| _owner | address | undefined |
+| _owner | address | The address of the user to query. |
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined |
+| _0 | uint256 | The token ID owned by the user. |
 
 ### tokenOfOwnerByIndex
 
@@ -591,7 +536,7 @@ function tokenOfOwnerByIndex(address owner, uint256 index) external view returns
 function tokenOwnerFromId(uint256 id) external view returns (address)
 ```
 
-
+Get the owner address of the specified token ID.
 
 
 
@@ -599,13 +544,13 @@ function tokenOwnerFromId(uint256 id) external view returns (address)
 
 | Name | Type | Description |
 |---|---|---|
-| id | uint256 | undefined |
+| id | uint256 | The token ID to query. |
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | address | undefined |
+| _0 | address | The address of the token owner. |
 
 ### tokenURI
 
@@ -613,7 +558,7 @@ function tokenOwnerFromId(uint256 id) external view returns (address)
 function tokenURI(uint256 tokenId) external view returns (string)
 ```
 
-Get the URI of the specified token ID
+Get the URI of the specified token ID.
 
 
 
@@ -621,13 +566,13 @@ Get the URI of the specified token ID
 
 | Name | Type | Description |
 |---|---|---|
-| tokenId | uint256 | The ID of the token to get the URI for |
+| tokenId | uint256 | The ID of the token to get the URI for. |
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | string | The URI of the specified token ID |
+| _0 | string | The URI of the specified token ID. |
 
 ### totalSupply
 
@@ -652,17 +597,17 @@ function totalSupply() external view returns (uint256)
 function transferFrom(address from, address to, uint256 tokenId) external nonpayable
 ```
 
-Transfers the VibePass from one user to another
+Transfers the VibePass from one user to another.
 
-
+*Only callable by the Consul.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| from | address | The address of the current owner |
-| to | address | The address of the new owner |
-| tokenId | uint256 | The token ID to transfer |
+| from | address | The address of the current owner. |
+| to | address | The address of the new owner. |
+| tokenId | uint256 | The token ID to transfer. |
 
 ### viewUrl
 
@@ -670,7 +615,7 @@ Transfers the VibePass from one user to another
 function viewUrl(address user) external view returns (string)
 ```
 
-View the URI associated with a user&#39;s VibePass
+View the URI associated with a user&#39;s VibePass.
 
 
 
@@ -678,13 +623,13 @@ View the URI associated with a user&#39;s VibePass
 
 | Name | Type | Description |
 |---|---|---|
-| user | address | The address of the user |
+| user | address | The address of the user. |
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | string | The URI of the user&#39;s VibePass |
+| _0 | string | The URI of the user&#39;s VibePass. |
 
 ### withdrawOneswap
 
@@ -692,9 +637,9 @@ View the URI associated with a user&#39;s VibePass
 function withdrawOneswap() external nonpayable
 ```
 
+Withdraw funds from OneSwap contract.
 
-
-
+*Only callable by the Consul.*
 
 
 ### xusd
@@ -754,10 +699,10 @@ event ApprovalForAll(address indexed owner, address indexed operator, bool appro
 | operator `indexed` | address | undefined |
 | approved  | bool | undefined |
 
-### DelegateChanged
+### GladiatorRankUpdated
 
 ```solidity
-event DelegateChanged(address indexed delegator, address indexed fromDelegate, address indexed toDelegate)
+event GladiatorRankUpdated(int256 newRank)
 ```
 
 
@@ -768,14 +713,12 @@ event DelegateChanged(address indexed delegator, address indexed fromDelegate, a
 
 | Name | Type | Description |
 |---|---|---|
-| delegator `indexed` | address | undefined |
-| fromDelegate `indexed` | address | undefined |
-| toDelegate `indexed` | address | undefined |
+| newRank  | int256 | undefined |
 
-### DelegateVotesChanged
+### OneSwapFundsWithdrawn
 
 ```solidity
-event DelegateVotesChanged(address indexed delegate, uint256 previousVotes, uint256 newVotes)
+event OneSwapFundsWithdrawn(address indexed consul, uint256 amount)
 ```
 
 
@@ -786,9 +729,44 @@ event DelegateVotesChanged(address indexed delegate, uint256 previousVotes, uint
 
 | Name | Type | Description |
 |---|---|---|
-| delegate `indexed` | address | undefined |
-| previousVotes  | uint256 | undefined |
-| newVotes  | uint256 | undefined |
+| consul `indexed` | address | undefined |
+| amount  | uint256 | undefined |
+
+### PassMinted
+
+```solidity
+event PassMinted(address indexed user, uint256 tokenId, uint256 purchaseBurnAmount)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| user `indexed` | address | undefined |
+| tokenId  | uint256 | undefined |
+| purchaseBurnAmount  | uint256 | undefined |
+
+### PassTransferred
+
+```solidity
+event PassTransferred(address indexed from, address indexed to, uint256 tokenId)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| from `indexed` | address | undefined |
+| to `indexed` | address | undefined |
+| tokenId  | uint256 | undefined |
 
 ### Transfer
 
@@ -841,23 +819,6 @@ event UserNameUpdated(address indexed user, string newUserName)
 |---|---|---|
 | user `indexed` | address | undefined |
 | newUserName  | string | undefined |
-
-### WhitelistContract
-
-```solidity
-event WhitelistContract(address indexed contractAddr, bool status)
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| contractAddr `indexed` | address | undefined |
-| status  | bool | undefined |
 
 ### XusdAddressUpdated
 

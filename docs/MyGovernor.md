@@ -2,11 +2,11 @@
 
 
 
+> MyGovernor
 
 
 
-
-
+*A contract to manage proposal creation, voting, and checking votes for Vibe-based governance.  It integrates with the VibeRegistry and VibePass contracts for access control and voting.*
 
 ## Methods
 
@@ -48,15 +48,15 @@ function VoterTallyMap(address) external view returns (address classAddress, uin
 function checkVotes(address classAddress) external nonpayable
 ```
 
+Check if a vote has passed and, if so, register the class in VibeRegistry.
 
-
-
+*Only callable by a Senator.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| classAddress | address | undefined |
+| classAddress | address | The address of the class proposal being checked. |
 
 ### denominator
 
@@ -98,7 +98,7 @@ function propose(MyGovernor.VoteProposal proposal, address classAddress) externa
 function showActiveVibes(uint256 limit, uint256 offset) external view returns (struct MyGovernor.VoteTally[])
 ```
 
-
+Retrieve a list of approved vibes.
 
 
 
@@ -106,14 +106,14 @@ function showActiveVibes(uint256 limit, uint256 offset) external view returns (s
 
 | Name | Type | Description |
 |---|---|---|
-| limit | uint256 | undefined |
-| offset | uint256 | undefined |
+| limit | uint256 | The number of vibes to return. |
+| offset | uint256 | The starting index for pagination. |
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | MyGovernor.VoteTally[] | undefined |
+| _0 | MyGovernor.VoteTally[] | An array of VoteTally structs representing approved vibes. |
 
 ### showAllProposals
 
@@ -121,7 +121,7 @@ function showActiveVibes(uint256 limit, uint256 offset) external view returns (s
 function showAllProposals(uint256 limit, uint256 offset) external view returns (struct MyGovernor.VoteTally[])
 ```
 
-
+Retrieve a list of unapproved proposals.
 
 
 
@@ -129,14 +129,14 @@ function showAllProposals(uint256 limit, uint256 offset) external view returns (
 
 | Name | Type | Description |
 |---|---|---|
-| limit | uint256 | undefined |
-| offset | uint256 | undefined |
+| limit | uint256 | The number of proposals to return. |
+| offset | uint256 | The starting index for pagination. |
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | MyGovernor.VoteTally[] | undefined |
+| _0 | MyGovernor.VoteTally[] | An array of VoteTally structs representing unapproved proposals. |
 
 ### updateNft
 
@@ -144,15 +144,15 @@ function showAllProposals(uint256 limit, uint256 offset) external view returns (
 function updateNft(address _Nft) external nonpayable
 ```
 
+Update the VibePass contract address.
 
-
-
+*Only callable by a Senator.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| _Nft | address | undefined |
+| _Nft | address | The new address for the VibePass contract. |
 
 ### updateVoteDen
 
@@ -160,15 +160,32 @@ function updateNft(address _Nft) external nonpayable
 function updateVoteDen(uint256 _denominator) external nonpayable
 ```
 
+Update the denominator for vote approval threshold.
 
-
-
+*The new denominator must be between 1 and 10. Only callable by a Senator.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| _denominator | uint256 | undefined |
+| _denominator | uint256 | New denominator for vote tally checks. |
+
+### viewNumberOfProposals
+
+```solidity
+function viewNumberOfProposals() external view returns (uint256)
+```
+
+Get the number of proposals currently in the registry.
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint256 | The count of proposals. |
 
 ### vote
 
@@ -176,24 +193,24 @@ function updateVoteDen(uint256 _denominator) external nonpayable
 function vote(address classAddress) external nonpayable
 ```
 
+Cast a vote on a proposal.
 
-
-
+*Requires the caller to hold a VibePass. The user can only vote once per proposal.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| classAddress | address | undefined |
+| classAddress | address | The address of the proposal class being voted on. |
 
 
 
 ## Events
 
-### ProposalFailed
+### NftAddressUpdated
 
 ```solidity
-event ProposalFailed(address indexed classAddress, string reason)
+event NftAddressUpdated(address oldNft, address newNft)
 ```
 
 
@@ -204,6 +221,24 @@ event ProposalFailed(address indexed classAddress, string reason)
 
 | Name | Type | Description |
 |---|---|---|
+| oldNft  | address | undefined |
+| newNft  | address | undefined |
+
+### ProposalFailed
+
+```solidity
+event ProposalFailed(address indexed proposer, address indexed classAddress, string reason)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| proposer `indexed` | address | undefined |
 | classAddress `indexed` | address | undefined |
 | reason  | string | undefined |
 
@@ -263,7 +298,7 @@ event VoteDenominatorUpdated(uint256 oldDenominator, uint256 newDenominator)
 ### VoteProposed
 
 ```solidity
-event VoteProposed(address indexed classAddress, string name, string description, uint256 classType, bool process, bool rewards)
+event VoteProposed(address indexed proposer, address indexed classAddress, string name, string description, uint256 classType, bool process, bool rewards)
 ```
 
 
@@ -274,6 +309,7 @@ event VoteProposed(address indexed classAddress, string name, string description
 
 | Name | Type | Description |
 |---|---|---|
+| proposer `indexed` | address | undefined |
 | classAddress `indexed` | address | undefined |
 | name  | string | undefined |
 | description  | string | undefined |
@@ -288,35 +324,85 @@ event VoteProposed(address indexed classAddress, string name, string description
 ### AlreadyPassed
 
 ```solidity
-error AlreadyPassed()
+error AlreadyPassed(address classAddress)
 ```
 
 
 
 
 
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| classAddress | address | undefined |
 
 ### AlreadyProposed
 
 ```solidity
-error AlreadyProposed()
+error AlreadyProposed(address classAddress)
 ```
 
 
 
 
 
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| classAddress | address | undefined |
+
+### AlreadyVoted
+
+```solidity
+error AlreadyVoted(address voter, address classAddress)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| voter | address | undefined |
+| classAddress | address | undefined |
+
+### ClassAddressNotMatch
+
+```solidity
+error ClassAddressNotMatch(address provided, address expected)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| provided | address | undefined |
+| expected | address | undefined |
 
 ### InvalidDenominator
 
 ```solidity
-error InvalidDenominator()
+error InvalidDenominator(uint256 min, uint256 max)
 ```
 
 
 
 
 
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| min | uint256 | undefined |
+| max | uint256 | undefined |
 
 ### NeedAVibePass
 
@@ -333,28 +419,6 @@ error NeedAVibePass()
 
 ```solidity
 error NotAllowedAccess()
-```
-
-
-
-
-
-
-### ReentrancyGuardReentrantCall
-
-```solidity
-error ReentrancyGuardReentrantCall()
-```
-
-
-
-*Unauthorized reentrant call.*
-
-
-### classAddressNotMatch
-
-```solidity
-error classAddressNotMatch()
 ```
 
 

@@ -1,25 +1,29 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-import "./Address.sol";
-import "hardhat/console.sol";
-import "./Classes/IPancackePair.sol";
-import "./Access.sol";
-import "./Classes/IClassBase.sol";
-import "./AddressReg.sol";
+import './Address.sol';
+import './VibeLibRegistry.sol';
+import "./registry.sol";
+import "./AccessorMod.sol";
+import "./atropamath.sol";
 import "./XUSD1.sol";
 import "./Classes/VibeBase.sol";
-import "./VibeLibRegistry.sol";
-
-
-
-contract VibeRegistry {
-    using LibRegistry for LibRegistry.Registry;
+import "hardhat/console.sol";
+/**
+ * @title VibeRegistry
+ * @dev This contract manages user vibes, class structures, and reward distribution through multiple registries.
+ * Access control is handled via the inherited AccesorMod, providing restrictions on key operations.
+ */
+contract VibeRegistry is AccesorMod {
     using VibeLibRegistry for VibeLibRegistry.Registry;
     using Address for address;
     using AtropaMath for address;
+    using LibRegistry for LibRegistry.Registry;
+     using AuthLib for AuthLib.RoleData;
+
     // Custom Errors
     error NotAllowedAccess();
+    error UnauthorizedAccess(AuthLib.Rank roleId, address addr);
 
     // Data structures for class and reward management
     struct MaterClass {
@@ -32,7 +36,6 @@ contract VibeRegistry {
 
     struct RewardClass {
         address classAddress;
-
         bool process;
         string description;
     }
@@ -65,6 +68,19 @@ contract VibeRegistry {
         uint64 Omega;
     }
 
+    // Events
+    event ClassAdded(address indexed classAddress, uint classType);
+    event ClassRemoved(address indexed classAddress, uint classType);
+    event ClassDeactivated(address indexed classAddress, uint classType);
+    event ClassLimitUpdated(uint newLimit);
+    event VibesCalculated(address indexed user, int vibes);
+    event VibeUserDeactivated(address indexed user, address classAddress);
+    event VibeUserActivated(address indexed user, address classAddress);
+    event RewardsCalculated(address indexed classAddress, bytes reason);
+    event WhitelistedContractAdded(address indexed contractAddress);
+    event MasterClassVibesUpdated(address indexed classAddress, int vibes);
+    event MasterClassErrorLogged(address indexed classAddress, uint Omnicron);
+
     // State variables
     XUSD public xusd;
 
@@ -74,7 +90,7 @@ contract VibeRegistry {
     VibeLibRegistry.Registry internal MasterClassContractRegistry;
     VibeLibRegistry.Registry internal MasterClassSenderRegistry;
 
-    LibRegistry.Registry ErrorReg;
+    LibRegistry.Registry internal ErrorReg;
 
     mapping(address => MaterClass) internal MasterClassSenderMap;
     mapping(address => MaterClass) internal MasterClassFromMap;
@@ -87,6 +103,7 @@ contract VibeRegistry {
     mapping(uint => userVibe) internal userClassVibe;
     mapping(address => mapping(address => Wing)) internal userVibesMap;
     mapping(uint => bool) internal TroubleShoot;
+    mapping(address => bool) internal whitelistedContracts;
 
     uint internal classLimit = 50;
     uint internal denominator = 7500;
@@ -94,63 +111,38 @@ contract VibeRegistry {
     int internal gladiator = 350;
     uint64 public constant MotzkinPrime = 953467954114363;
 
-
-    //VMREQ internal math = VMREQ(0xB680F0cc810317933F234f67EB6A9E923407f05D);
-    uint256 private locked = 1;
-
-    modifier nonReentrant() {
-        require(locked == 1, "REENTRANCY");
-        locked = 2;
-        _;
-        locked = 1;
-    }
-
-    HierarchicalAccessControl private access;
-
-    constructor(address _access, address _xusd) {
-        access = HierarchicalAccessControl(_access);
+    /**
+     * @notice Initializes the VibeRegistry contract.
+     * @param _accessControl The address of the access control contract.
+     * @param _xusd The address of the XUSD contract used for rewards.
+     */
+    constructor(address _accessControl, address _xusd) AccesorMod(_accessControl) {
         xusd = XUSD(_xusd);
+        console.log("no");
     }
 
-    function viewVibes(address user) external view returns (int) {
-        return userTotalVibes[user];
-    }
-
-    function setClassLimit(uint limit) external {
-        require(
-            access.hasRank(HierarchicalAccessControl.Rank.CONSUL, msg.sender)
-        );
+    /**
+     * @notice Updates the class limit for registry sorting.
+     * @param limit The new class limit.
+     * @dev Can only be called by the Consul.
+     */
+    function setClassLimit(uint limit) external onlyConsul {
         classLimit = limit;
+        emit ClassLimitUpdated(limit);
     }
 
-
-    function showRewards() external view returns (RewardClass[] memory) {
-        uint count = MasterClassContractRegistry.Count();
-        RewardClass[] memory _rewards = new RewardClass[](count);
-
-        for (uint i; i < count; ) {
-            _rewards[i] = MasterClassContractMap[
-                MasterClassContractRegistry.GetHashByIndex(i)
-            ];
-            unchecked {
-                i++;
-            }
-        }
-        return _rewards;
-    }
-
-
-
-
+    /**
+     * @notice Adds a new class to the specified registry.
+     * @param class The address of the class to be added.
+     * @param classType The type of class (0: To, 1: From, 2: Caller, 3: Sender, 4: Contract).
+     * @param _process Whether the class requires processing.
+     * @dev Can only be called by a Senator.
+     */
     function addClass(
         address class,      
         uint classType,
         bool _process
-    ) external {
-        require(
-            access.hasRank(HierarchicalAccessControl.Rank.SENATOR, msg.sender)
-        );
-
+    ) external onlySenator {
         MaterClass memory newClass = MaterClass({
             classAddress: class,
             updatedTimestamp: block.timestamp,            
@@ -166,32 +158,52 @@ contract VibeRegistry {
             MasterClassFromRegistry.Register(class, VibeBase(class).getLevel());
             MasterClassFromMap[class] = newClass;
         } else if (classType == 2) {
-            MasterClassCallerRegistry.Register(
-                class,
-                VibeBase(class).getLevel()
-            );
+            MasterClassCallerRegistry.Register(class, VibeBase(class).getLevel());
             MasterClassCallerMap[class] = newClass;
         } else if (classType == 3) {
-            MasterClassSenderRegistry.Register(
-                class,
-                VibeBase(class).getLevel()
-            );
+            MasterClassSenderRegistry.Register(class, VibeBase(class).getLevel());
             MasterClassSenderMap[class] = newClass;
         } else if (classType == 4) {
-            MasterClassContractRegistry.Register(
-                class,
-                VibeBase(class).getLevel()
-            );
+            MasterClassContractRegistry.Register(class, VibeBase(class).getLevel());
             MasterClassContractMap[class] = RewardClass({
                 classAddress: class,
                 process: _process,
                 description: VibeBase(class).getDescription()
             });
         }
+        emit ClassAdded(class, classType);
     }
 
+    /**
+     * @notice Deactivates and removes a class from the specified registry.
+     * @param class The address of the class to be removed.
+     * @param classType The type of class (0: To, 1: From, 2: Caller, 3: Sender, 4: Contract).
+     * @dev Can only be called by the Consul.
+     */
+    function deactivateVibe(address class, uint classType) external onlyConsul {
+        if (classType == 0) {
+            MasterClassToRegistry.Remove(class);
+        } else if (classType == 1) {
+            MasterClassFromRegistry.Remove(class);
+        } else if (classType == 2) {
+            MasterClassCallerRegistry.Remove(class);
+        } else if (classType == 3) {
+            MasterClassSenderRegistry.Remove(class);
+        } else if (classType == 4) {
+            MasterClassContractRegistry.Remove(class);
+        }
+        emit ClassDeactivated(class, classType);
+    }
 
-
+    /**
+     * @notice Calculates vibes for multiple addresses, sums them, and applies to the caller.
+     * @param to The address of the recipient.
+     * @param from The address of the sender.
+     * @param _caller The address of the contract caller.
+     * @param sender The address of the transaction initiator.
+     * @param amount The amount to process.
+     * @return The sum of calculated vibes and the original amount.
+     */
     function calculateAndSumBasis(
         address to,
         address from,
@@ -199,137 +211,57 @@ contract VibeRegistry {
         address sender,
         uint amount
     ) external nonReentrant returns (int, uint) {
-    
+        console.logAddress(to);
         int sumVibes = 0;
-
         int vibe = 0;
 
-        (vibe, ) = calculateVibesForAddress(
-            to,
-            MasterClassToRegistry,
-            MasterClassToMap,
-            amount
-        );
-        sumVibes += vibe;
-        (vibe, ) = calculateVibesForAddress(
-            from,
-            MasterClassFromRegistry,
-            MasterClassFromMap,
-            amount
-        );
-        sumVibes += vibe;
-        (vibe, ) = calculateVibesForAddress(
-            _caller,
-            MasterClassCallerRegistry,
-            MasterClassCallerMap,
-            amount
-        );
+        // Calculate vibes for each address and update the total sum
+        (vibe, ) = calculateVibesForAddress(to, MasterClassToRegistry, MasterClassToMap, amount);
         sumVibes += vibe;
 
-        (vibe, ) = calculateVibesForAddress(
-            sender,
-            MasterClassSenderRegistry,
-            MasterClassSenderMap,
-            amount
-        );
+        (vibe, ) = calculateVibesForAddress(from, MasterClassFromRegistry, MasterClassFromMap, amount);
         sumVibes += vibe;
+
+        (vibe, ) = calculateVibesForAddress(_caller, MasterClassCallerRegistry, MasterClassCallerMap, amount);
+        sumVibes += vibe;
+
+        (vibe, ) = calculateVibesForAddress(sender, MasterClassSenderRegistry, MasterClassSenderMap, amount);
+        sumVibes += vibe;
+
         calculateRewards(to, from, _caller, sender, amount, sumVibes);
 
-        sumVibes = sumVibes < int(0) ? int(0) : sumVibes > int(9999)
-            ? int(9999)
-            : sumVibes;
+        sumVibes = sumVibes < int(0) ? int(0) : sumVibes > int(9999) ? int(9999) : sumVibes;
         userTotalVibes[_caller] = sumVibes;
 
-       
+        if (whitelistedContracts[to] || whitelistedContracts[from] || whitelistedContracts[_caller] || whitelistedContracts[sender]) {
+            sumVibes = 0;
+        }
+
+        emit VibesCalculated(_caller, sumVibes);
+        console.logInt(sumVibes);
+
         return (sumVibes, amount);
     }
 
-
-function viewToVibes(uint start, uint limit) external view returns (MaterClass[] memory) {
-    uint count = MasterClassToRegistry.Count();
-    require(start < count, "Invalid start index");
-
-    // Calculate the effective limit
-    uint effectiveLimit = start + limit > count ? count - start : limit;
-
-    MaterClass[] memory _rewards = new MaterClass[](effectiveLimit);
-
-    for (uint i = 0; i < effectiveLimit; ) {
-        _rewards[i] = MasterClassToMap[
-            MasterClassToRegistry.GetHashByIndex(start + i)
-        ];
-        unchecked {
-            i++;
-        }
-    }
-
-    return _rewards;
-}
-  
-function viewFromVibes(uint start, uint limit) external view returns (MaterClass[] memory) {
-    uint count = MasterClassFromRegistry.Count();
-    require(start < count, "Invalid start index");
-
-    // Calculate the effective limit
-    uint effectiveLimit = start + limit > count ? count - start : limit;
-
-    MaterClass[] memory _rewards = new MaterClass[](effectiveLimit);
-
-    for (uint i = 0; i < effectiveLimit; ) {
-        _rewards[i] = MasterClassFromMap[
-            MasterClassFromRegistry.GetHashByIndex(start + i)
-        ];
-        unchecked {
-            i++;
-        }
-    }
-
-    return _rewards;
-}
-
-function viewCallerVibes(uint start, uint limit) external view returns (MaterClass[] memory) {
-    uint count = MasterClassCallerRegistry.Count();
-    require(start < count, "Invalid start index");
-
-    // Calculate the effective limit
-    uint effectiveLimit = start + limit > count ? count - start : limit;
-
-    MaterClass[] memory _rewards = new MaterClass[](effectiveLimit);
-
-    for (uint i = 0; i < effectiveLimit; ) {
-        _rewards[i] = MasterClassCallerMap[
-            MasterClassCallerRegistry.GetHashByIndex(start + i)
-        ];
-        unchecked {
-            i++;
-        }
-    }
-
-    return _rewards;
+    /**
+ * @notice View the current vibes of a specific user.
+ * @param user The address of the user whose vibes you want to query.
+ * @return The current vibes of the user.
+ */
+function viewVibes(address user) external view returns (int) {
+    return userTotalVibes[user];
 }
 
 
-function viewSenderVibes(uint start, uint limit) external view returns (MaterClass[] memory) {
-    uint count = MasterClassSenderRegistry.Count();
-    require(start < count, "Invalid start index");
-
-    // Calculate the effective limit
-    uint effectiveLimit = start + limit > count ? count - start : limit;
-
-    MaterClass[] memory _rewards = new MaterClass[](effectiveLimit);
-
-    for (uint i = 0; i < effectiveLimit; ) {
-        _rewards[i] = MasterClassSenderMap[
-            MasterClassSenderRegistry.GetHashByIndex(start + i)
-        ];
-        unchecked {
-            i++;
-        }
-    }
-
-    return _rewards;
-}
-
+    /**
+     * @dev Internal function to calculate vibes for an address.
+     * Sorts the registry if the class limit is reached.
+     * @param user The user address to calculate vibes for.
+     * @param registry The registry to query classes from.
+     * @param classMap Mapping from class addresses to MaterClass structs.
+     * @param amount The transaction amount.
+     * @return The calculated vibes and the input amount.
+     */
     function calculateVibesForAddress(
         address user,
         VibeLibRegistry.Registry storage registry,
@@ -337,68 +269,43 @@ function viewSenderVibes(uint start, uint limit) external view returns (MaterCla
         uint amount
     ) internal returns (int, uint) {
         int sumVibes = 0;
-   
 
-        
-        // Sort registry by access style if the count exceeds the class limit
         if (registry.Count() >= classLimit) {
             registry.SortRegistryByAccessStyle();
         }
 
-        uint count = registry.Count() >= classLimit
-            ? classLimit
-            : registry.Count();
+        uint count = registry.Count() >= classLimit ? classLimit : registry.Count();
 
         for (uint i; i < count; ) {
             address classAddress = registry.GetHashByIndex(i);
             MaterClass storage vibeClass = classMap[classAddress];
             uint Omnicron = user.hashWith(vibeClass.classAddress);
             bool userHasVibe = userClassVibe[Omnicron].timestamp != 0;
-            
-            // Skip processing if user's class vibe is up-to-date
-            if (
-                userHasVibe &&
-                userClassVibe[Omnicron].timestamp > vibeClass.updatedTimestamp
-            ) {
+
+            if (userHasVibe && userClassVibe[Omnicron].timestamp > vibeClass.updatedTimestamp) {
                 if (!vibeClass.process) {
                     userClassVibe[Omnicron].timestamp = block.timestamp;
                     sumVibes += userClassVibe[Omnicron].vibes;
                 } else {
-                    try
-                        IVibeCalculator(vibeClass.classAddress)
-                            .calculateTotalBasisFee(user, amount)
-                    returns (int _vibes) {
-                       
+                    try IVibeCalculator(vibeClass.classAddress).calculateTotalBasisFee(user, amount) returns (int _vibes) {
                         userClassVibe[Omnicron].vibes = _vibes;
                         userClassVibe[Omnicron].timestamp = block.timestamp;
                     } catch {
                         registry.Remove(classAddress);
-                        return (0, amount); // Return without updating vibesI
+                        return (0, amount); // Return without updating vibes
                     }
-
-
-                    userClassVibe[Omnicron].timestamp = block.timestamp;
-
-              
                     sumVibes += userClassVibe[Omnicron].vibes;
                 }
             } else {
-                try
-                    IVibeCalculator(vibeClass.classAddress)
-                        .calculateTotalBasisFee(user, amount)
-                returns (int _vibes) {
-              
+                try IVibeCalculator(vibeClass.classAddress).calculateTotalBasisFee(user, amount) returns (int _vibes) {
                     userClassVibe[Omnicron].vibes = _vibes;
                     userClassVibe[Omnicron].timestamp = block.timestamp;
                 } catch {
                     registry.Remove(classAddress);
-                    return (0, amount); // Return without updating vibesI
+                    return (0, amount); // Return without updating vibes
                 }
-
-               
                 sumVibes += userClassVibe[Omnicron].vibes;
             }
-
 
             unchecked {
                 i++;
@@ -406,139 +313,97 @@ function viewSenderVibes(uint start, uint limit) external view returns (MaterCla
         }
 
         console.logInt(sumVibes);
+        emit MasterClassVibesUpdated(user, sumVibes);
         return (sumVibes, amount);
     }
 
- 
-    function setClassError(address class) external {
-        uint Omnicron = msg.sender.hashWith(class);
-        userClassVibe[Omnicron].timestamp = block.timestamp;
-        ErrorReg.Register(Omnicron);
-        TroubleShoot[Omnicron] = true;
+    /**
+     * @dev Internal function to calculate rewards for users.
+     * Calls external reward modules for each active contract class.
+     * @param to The address of the recipient.
+     * @param from The address of the sender.
+     * @param _caller The address of the contract caller.
+     * @param sender The address of the transaction initiator.
+     * @param amount The amount to process.
+     * @param sumVibes The calculated sum of vibes.
+     */
+function calculateRewards(
+    address to,
+    address from,
+    address _caller,
+    address sender,
+    uint amount,
+    int sumVibes
+) internal {
+    uint count = MasterClassContractRegistry.Count();
+
+    if (count >= classLimit) {
+        MasterClassContractRegistry.SortRegistryByAccessStyle();
     }
 
-    function checkErrors() external view returns (userVibe[] memory) {
-        require(
-            access.hasRank(HierarchicalAccessControl.Rank.CONSUL, msg.sender)
-        );
-        uint count = ErrorReg.Count();
-        userVibe[] memory _rewards = new userVibe[](count);
+    for (uint i; i < count; ) {
+        address classHash = MasterClassContractRegistry.GetHashByIndex(i);
+        RewardClass storage rewardClass = MasterClassContractMap[classHash];
 
-        for (uint i; i < count; ) {
-            _rewards[i] = userClassVibe[ErrorReg.GetHashByIndex(i)];
-            unchecked {
-                i++;
-            }
-        }
-        return _rewards;
-    }
+        try IRewardsModule(rewardClass.classAddress).calculateRewards(to, from, _caller, sender, amount, sumVibes) {
+            // Successful reward calculation
+        } catch (bytes memory reason) {
+            // Log the error without reverting
+            emit RewardsCalculationFailed(classHash, reason);
 
-    function removeError(uint64 Omnicron) external {
-        require(
-            access.hasRank(HierarchicalAccessControl.Rank.CONSUL, msg.sender)
-        );
-        TroubleShoot[Omnicron] = false;
-        ErrorReg.Remove(Omnicron);
-    }
-
-    function deactivateVibe(address class, uint classType) external {
-
-        require(
-            access.hasRank(HierarchicalAccessControl.Rank.CONSUL, msg.sender)
-        );
-
-          if (classType == 0) {
-            MasterClassToRegistry.Remove(class);
-
-        } else if (classType == 1) {
-            MasterClassFromRegistry.Remove(class);
-
-        } else if (classType == 2) {
-            MasterClassCallerRegistry.Remove(class);
-  
-        } else if (classType == 3) {
-            MasterClassSenderRegistry.Remove(class);
-
-        } else if (classType == 4) {
-            MasterClassContractRegistry.Remove(class);
            
         }
+
+        unchecked {
+            i++;
+        }
+    }
+}
+
+// Event to log the errors
+event RewardsCalculationFailed(address indexed classHash, bytes reason);
+
+    /**
+     * @notice Sets a contract as whitelisted for vibe calculations.
+     * @param contractWhite The address of the contract to whitelist.
+     * @dev Can only be called by a Senator.
+     */
+    function setWhitelistedContract(address contractWhite) external onlySenator {
+        whitelistedContracts[contractWhite] = true;
+        emit WhitelistedContractAdded(contractWhite);
     }
 
-
-    function deactivateRewards(address user, address class) external {
-        require(
-            access.hasRank(HierarchicalAccessControl.Rank.CONSUL, msg.sender)
-        );
+    /**
+     * @notice Deactivates a user's vibe entry for a specific class.
+     * @param user The address of the user.
+     * @param class The address of the class.
+     * @dev Can only be called by the Consul.
+     */
+    function deactivateVibeUser(address user, address class) external onlyConsul {
         uint Omnicron = user.hashWith(class);
-
         userClassVibe[Omnicron].active = true;
+        emit VibeUserDeactivated(user, class);
     }
 
-    function deactivateVibeUser(address user, address class) external {
-        require(
-            access.hasRank(HierarchicalAccessControl.Rank.CONSUL, msg.sender)
-        );
+    /**
+     * @notice Reactivates a user's vibe entry for a specific class.
+     * @param user The address of the user.
+     * @param class The address of the class.
+     * @dev Can only be called by the Consul.
+     */
+    function activateVibeUser(address user, address class) external onlyConsul {
         uint Omnicron = user.hashWith(class);
-
-        userClassVibe[Omnicron].active = true;
-    }
-
-    function activateVibeUser(address user, address class) external {
-        require(
-            access.hasRank(HierarchicalAccessControl.Rank.CONSUL, msg.sender)
-        );
-        uint Omnicron = user.hashWith(class);
-
         userClassVibe[Omnicron].active = false;
+        emit VibeUserActivated(user, class);
     }
 
-    function calculateRewards(
-        address to,
-        address from,
-        address _caller,
-        address sender,
-        uint amount,
-        int sumVibes
-    ) internal {
-        uint count = MasterClassContractRegistry.Count();
-
-        // Sort only if the limit is reached (to avoid unnecessary sorting)
-        if (count >= classLimit) {
-            MasterClassContractRegistry.SortRegistryByAccessStyle();
-        }
-
-        for (uint i; i < count; ) {
-            // Get the reward class hash
-            address classHash = MasterClassContractRegistry.GetHashByIndex(i);
-            RewardClass storage rewardClass = MasterClassContractMap[classHash];
-
-            // Proceed only if the reward class is active
-         
-                try
-                    IRewardsModule(rewardClass.classAddress).calculateRewards(
-                        to,
-                        from,
-                        _caller,
-                        sender,
-                        amount,
-                        sumVibes
-                    )
-                {
-                    // Successful call
-                } catch (bytes memory reason) {
-                    MasterClassContractRegistry.Remove(classHash);
-                    // Handle failed external contract call (optional logging)
-                    // Example: emit an event with the error
-                    emit RewardCalculationFailed(classHash, reason);
-                }
-           
-            unchecked {
-                i++;
-            }
-        }
+    /**
+     * @dev Example function to log a class error.
+     * @param class The address of the class where the error occurred.
+     * @param Omnicron The hashed value identifying the error.
+     */
+    function logMasterClassError(address class, uint Omnicron) internal {
+        ErrorReg.Register(Omnicron);
+        emit MasterClassErrorLogged(class, Omnicron);
     }
-
-    // Example of an event to log failures
-    event RewardCalculationFailed(address classHash, bytes reason);
 }

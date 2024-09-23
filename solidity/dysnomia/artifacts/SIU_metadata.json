@@ -1,0 +1,832 @@
+{
+	"compiler": {
+		"version": "0.8.27+commit.40a35a09"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "YangAddress",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "origin",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "sender",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "spender",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "what",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "allowance",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "needed",
+						"type": "uint256"
+					}
+				],
+				"name": "DysnomiaInsufficientAllowance",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "origin",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "sender",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "from",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "what",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "balance",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "needed",
+						"type": "uint256"
+					}
+				],
+				"name": "DysnomiaInsufficientBalance",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "asset",
+						"type": "address"
+					}
+				],
+				"name": "MarketRateNotFound",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "origin",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "what",
+						"type": "address"
+					}
+				],
+				"name": "OwnableInvalidOwner",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "origin",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "what",
+						"type": "address"
+					}
+				],
+				"name": "OwnableUnauthorizedAccount",
+				"type": "error"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "spender",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "value",
+						"type": "uint256"
+					}
+				],
+				"name": "Approval",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "bool",
+						"name": "state",
+						"type": "bool"
+					}
+				],
+				"name": "OwnershipUpdate",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "from",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "value",
+						"type": "uint256"
+					}
+				],
+				"name": "Transfer",
+				"type": "event"
+			},
+			{
+				"inputs": [],
+				"name": "Aura",
+				"outputs": [
+					{
+						"internalType": "uint64",
+						"name": "",
+						"type": "uint64"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_a",
+						"type": "address"
+					}
+				],
+				"name": "GetMarketRate",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "symbol",
+						"type": "string"
+					}
+				],
+				"name": "Miu",
+				"outputs": [
+					{
+						"internalType": "uint64[3]",
+						"name": "Saat",
+						"type": "uint64[3]"
+					},
+					{
+						"components": [
+							{
+								"internalType": "address",
+								"name": "Phi",
+								"type": "address"
+							},
+							{
+								"internalType": "contract SHA",
+								"name": "Mu",
+								"type": "address"
+							},
+							{
+								"internalType": "uint64",
+								"name": "Xi",
+								"type": "uint64"
+							},
+							{
+								"internalType": "uint64",
+								"name": "Pi",
+								"type": "uint64"
+							},
+							{
+								"internalType": "contract SHIO",
+								"name": "Shio",
+								"type": "address"
+							},
+							{
+								"internalType": "uint64",
+								"name": "Ring",
+								"type": "uint64"
+							},
+							{
+								"internalType": "uint64",
+								"name": "Omicron",
+								"type": "uint64"
+							},
+							{
+								"internalType": "uint64",
+								"name": "Omega",
+								"type": "uint64"
+							}
+						],
+						"internalType": "struct Bao",
+						"name": "On",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "MotzkinPrime",
+				"outputs": [
+					{
+						"internalType": "uint64",
+						"name": "",
+						"type": "uint64"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "Psi",
+				"outputs": [
+					{
+						"internalType": "contract YANG",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_t",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_a",
+						"type": "uint256"
+					}
+				],
+				"name": "Purchase",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_t",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_a",
+						"type": "uint256"
+					}
+				],
+				"name": "Redeem",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "newName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "newSymbol",
+						"type": "string"
+					}
+				],
+				"name": "Rename",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "Type",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "Xiao",
+				"outputs": [
+					{
+						"internalType": "contract atropaMath",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "addOwner",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "spender",
+						"type": "address"
+					}
+				],
+				"name": "allowance",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "spender",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "value",
+						"type": "uint256"
+					}
+				],
+				"name": "approve",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "balanceOf",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "decimals",
+				"outputs": [
+					{
+						"internalType": "uint8",
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "maxSupply",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "mintToCap",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "name",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "cOwner",
+						"type": "address"
+					}
+				],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "toRemove",
+						"type": "address"
+					}
+				],
+				"name": "renounceOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "symbol",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "totalSupply",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "value",
+						"type": "uint256"
+					}
+				],
+				"name": "transfer",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "from",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "value",
+						"type": "uint256"
+					}
+				],
+				"name": "transferFrom",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"solidity/dysnomia/09_siu.sol": "SIU"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 100
+		},
+		"remappings": []
+	},
+	"sources": {
+		"solidity/addresses.sol": {
+			"keccak256": "0x50980b80d294629034ffb9d090df35ee17c6625420532faa3de39ed35dee9056",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://b8dbf60cbd6a274ba086df217462f13e07447e40f09611191318961675ecab23",
+				"dweb:/ipfs/QmcgnABjQFddfcWvcS6KpV5kRCbr1tLMVswYjiunqHwcNZ"
+			]
+		},
+		"solidity/dysnomia/01_dysnomia.sol": {
+			"keccak256": "0xa2f5740edb50339b5617e2baf5d9f6d45d23e86f9beadd6cae14cf8de7fee7c6",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://6401d7cdd144eac83fa67c95f9cd9c438a71308d2f8936f65fe48130eb31d8ba",
+				"dweb:/ipfs/QmWDqknrmk7YSmaTW4PhJHHfePb6Us4uxJ37q4x1zBPmrw"
+			]
+		},
+		"solidity/dysnomia/09_siu.sol": {
+			"keccak256": "0xf32e35514af449a79e970091334b0764ef9dccfd3ffe90f06ef8c098b3ac6663",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://54aec8029469243819f0b812c8d4ffa0a09b1c09dc6a386f83b57f96275d4953",
+				"dweb:/ipfs/Qme8FM5QMQQr6iCMk9aXWPhet8RzakDtPLjE7RwSqVEXMz"
+			]
+		},
+		"solidity/dysnomia/include/bao.sol": {
+			"keccak256": "0x257e4a9884075b125c407aec08e906b6dfd2339b178bf45d930720bc6c5250df",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://0c74053cecc15f555899074804d722a1dab90bda27cbc6a30e74423d49afa891",
+				"dweb:/ipfs/QmbxpP1tWYT7EdMDRyMB983Km3rhL3urkjn3ASYt5LjWow"
+			]
+		},
+		"solidity/dysnomia/include/fa.sol": {
+			"keccak256": "0x66d1f7bcc4941ed09f9df1e7a97eeeeed584fe327a420d258dbb2e258c91cf85",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://c5573edb127e2fe5ee52470eb9b4f8f741bba90e5a007a7f0de9be901810ed13",
+				"dweb:/ipfs/QmWTNsPbRTDypizippFjT8GyPj2Wz5QKTT1TwHrUdGn9gS"
+			]
+		},
+		"solidity/dysnomia/interfaces/02b_shainterface.sol": {
+			"keccak256": "0x813eee75715c2ce4bdd71946a508804e4d9474008eccc2f7c81b71721672f15d",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://3f3b48664fe7a9749c2a841aa339899e848ef5ce71bc5fce4243de9c2f36ce26",
+				"dweb:/ipfs/QmawYrzzzFzfTQ8bsmKDTukLKT7LjskkVikKWn8DFXTvcF"
+			]
+		},
+		"solidity/dysnomia/interfaces/02d_shafactoryinterface.sol": {
+			"keccak256": "0x749fd66e5c1de1d991ca7ad70dd91ed9a37428eda50cd9c34c7e3ad86914b316",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://046637a4260fdea88ef1200461a112997a9f87820c1dbf62ea0e2727439cfc2c",
+				"dweb:/ipfs/QmQiSminrK6uMmMg92joo3qtEptnyQH22DCWP3V4Djtvgs"
+			]
+		},
+		"solidity/dysnomia/interfaces/03b_shiointerface.sol": {
+			"keccak256": "0x294ce7ce70411838880e2d840e279bc1b5fff7c4c75f0e682d528b0e416d06fe",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://52b93c2123ef41aa7f8936807f0c68f353172c11effe5acf7b9dd1f0e3cedb5b",
+				"dweb:/ipfs/QmQ9JZ9b5DhpuTEHb1mSPZ817s7VXe6FwBTyvwgxJ4hjZS"
+			]
+		},
+		"solidity/dysnomia/interfaces/03d_shiofactoryinterface.sol": {
+			"keccak256": "0x4115646151c3c827f462c93aa34dd670551c1daae913bae767fe964580593f3e",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://c168a3e4d5b72a4b08fd2050f6b839dda36636669b6d7b73099497afb775f1a6",
+				"dweb:/ipfs/QmcVLcSzq21Kpm7YrkPdsmg8oTFbZteaaKzFD4m4qhCyLj"
+			]
+		},
+		"solidity/dysnomia/interfaces/04b_yiinterface.sol": {
+			"keccak256": "0xc8f2233b7f9cfb2564e2e9c0b2667f1745eb80fa41e8fd1d0786cd26e394b9af",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://772197c890b3335afb94fb8def274e4972bddeb148318205f79d8b2e7b1d08a4",
+				"dweb:/ipfs/Qmbph5aFVqAGSmCRYabCNFULPXwiyB2y2RqaHnThbL5VZw"
+			]
+		},
+		"solidity/dysnomia/interfaces/05b_zhenginterface.sol": {
+			"keccak256": "0xc86e01717f9d8f7e61eb7e6e633da3c061dd54958c327a1c42387dc10599c541",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://fa74921eaef5cf01889c56c39a23517bf38cc300ddf2bf243b1db4cedaf8efc4",
+				"dweb:/ipfs/QmXgpfPJ9Pv1HJxySJQsJ7tGHZtSNDqg6wFBvjERjXDvdp"
+			]
+		},
+		"solidity/dysnomia/interfaces/06b_zhouinterface.sol": {
+			"keccak256": "0x0fae86b20f6d3814057968781608fdfe566cc2e4ce7fed950583dc346287fa6e",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://ae1cdc95e4f7baa6d2a8abcc32dcd0863778d496c9efd870744da332b436a099",
+				"dweb:/ipfs/Qmd1QEanCryLzXvWKaA2MHLb9p5sYwmytEPYKito7Y9bhc"
+			]
+		},
+		"solidity/dysnomia/interfaces/07b_yauinterface.sol": {
+			"keccak256": "0xd4c13594972babd83d1430fc54266b81418ab63ad4473f2a0622870e8865ea0a",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://72db750a77b8ff57b74b5a5ca091e73f6d35f63ac7b2c1375c8e05cf843f9989",
+				"dweb:/ipfs/QmXyABeNvPkAYE4S21KzKk4pWq2kQNCnp4JgKPNuEdvg1v"
+			]
+		},
+		"solidity/dysnomia/interfaces/08b_yanginterface.sol": {
+			"keccak256": "0x43a024084fc62f707aa484a9aa88b9d7e97ef481069bf72df9c91daaaa8847fa",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://0a6b279ec60188097c34d0d6f028048b8a74c1f4bcf30a0dee5c522eac559b62",
+				"dweb:/ipfs/QmTWZf11QhHnxJsRZoWG7ieTVFakGkSeXb5sNdahGktfLT"
+			]
+		},
+		"solidity/dysnomia/lib/multiownable.sol": {
+			"keccak256": "0xd5bc09d51ea952718d51fc0c347aad20278f6a1c7a0fda63e40ea9317fbd7720",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://f6849eb624bc4d1a8503d368c7469c1a3b1a6a1527ae3c08be0be39f9c19ecf3",
+				"dweb:/ipfs/QmRAXRwbuCa8nXPtmUPV7EaBTU167tACRZZinqsSoHVgCm"
+			]
+		}
+	},
+	"version": 1
+}

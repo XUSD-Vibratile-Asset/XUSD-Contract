@@ -27,29 +27,6 @@ function MotzkinPrime() external view returns (uint64)
 |---|---|---|
 | _0 | uint64 | undefined |
 
-### hashWithHash
-
-```solidity
-function hashWithHash(address a, uint256 b) external pure returns (uint256 hash)
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| a | address | undefined |
-| b | uint256 | undefined |
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| hash | uint256 | undefined |
-
 ### sortThree
 
 ```solidity

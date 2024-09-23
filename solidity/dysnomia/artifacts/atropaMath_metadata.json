@@ -1,0 +1,170 @@
+{
+	"compiler": {
+		"version": "0.8.27+commit.40a35a09"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"name": "MotzkinPrime",
+				"outputs": [
+					{
+						"internalType": "uint64",
+						"name": "",
+						"type": "uint64"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "Random",
+				"outputs": [
+					{
+						"internalType": "uint64",
+						"name": "",
+						"type": "uint64"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "a",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "b",
+						"type": "address"
+					}
+				],
+				"name": "hashWith",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_b",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_e",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_m",
+						"type": "uint256"
+					}
+				],
+				"name": "modExp",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint64",
+						"name": "_b",
+						"type": "uint64"
+					},
+					{
+						"internalType": "uint64",
+						"name": "_e",
+						"type": "uint64"
+					},
+					{
+						"internalType": "uint64",
+						"name": "_m",
+						"type": "uint64"
+					}
+				],
+				"name": "modExp64",
+				"outputs": [
+					{
+						"internalType": "uint64",
+						"name": "",
+						"type": "uint64"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"solidity/dysnomia/01_dysnomia.sol": "atropaMath"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 100
+		},
+		"remappings": []
+	},
+	"sources": {
+		"solidity/addresses.sol": {
+			"keccak256": "0x50980b80d294629034ffb9d090df35ee17c6625420532faa3de39ed35dee9056",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://b8dbf60cbd6a274ba086df217462f13e07447e40f09611191318961675ecab23",
+				"dweb:/ipfs/QmcgnABjQFddfcWvcS6KpV5kRCbr1tLMVswYjiunqHwcNZ"
+			]
+		},
+		"solidity/dysnomia/01_dysnomia.sol": {
+			"keccak256": "0xa2f5740edb50339b5617e2baf5d9f6d45d23e86f9beadd6cae14cf8de7fee7c6",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://6401d7cdd144eac83fa67c95f9cd9c438a71308d2f8936f65fe48130eb31d8ba",
+				"dweb:/ipfs/QmWDqknrmk7YSmaTW4PhJHHfePb6Us4uxJ37q4x1zBPmrw"
+			]
+		},
+		"solidity/dysnomia/lib/multiownable.sol": {
+			"keccak256": "0xd5bc09d51ea952718d51fc0c347aad20278f6a1c7a0fda63e40ea9317fbd7720",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://f6849eb624bc4d1a8503d368c7469c1a3b1a6a1527ae3c08be0be39f9c19ecf3",
+				"dweb:/ipfs/QmRAXRwbuCa8nXPtmUPV7EaBTU167tACRZZinqsSoHVgCm"
+			]
+		}
+	},
+	"version": 1
+}

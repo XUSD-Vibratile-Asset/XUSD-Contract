@@ -1,0 +1,269 @@
+{
+	"compiler": {
+		"version": "0.8.27+commit.40a35a09"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "mockTokenAddress",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "traderAddress",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "reward",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					}
+				],
+				"name": "RewardDistributed",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "traderAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "rewardAmount",
+						"type": "uint256"
+					}
+				],
+				"name": "distributeReward",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "exchangeContract",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getExchangeContract",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "traderAddress",
+						"type": "address"
+					}
+				],
+				"name": "getTraderWithdrawnReward",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "mockTokenContract",
+				"outputs": [
+					{
+						"internalType": "contract IMockERC20",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "rewards",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_exchangeContract",
+						"type": "address"
+					}
+				],
+				"name": "setExchangeContract",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "withdraw",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {
+				"constructor": {
+					"params": {
+						"mockTokenAddress": "Address of the mock ERC20 token contract"
+					}
+				},
+				"distributeReward(address,uint256)": {
+					"params": {
+						"rewardAmount": "Amount of reward to distribute",
+						"traderAddress": "Address of the trader to receive the reward"
+					}
+				},
+				"getExchangeContract()": {
+					"returns": {
+						"_0": "Address of the exchange contract"
+					}
+				},
+				"getTraderWithdrawnReward(address)": {
+					"params": {
+						"traderAddress": "Address of the trader"
+					},
+					"returns": {
+						"_0": "Withdrawn reward for the trader"
+					}
+				},
+				"setExchangeContract(address)": {
+					"params": {
+						"_exchangeContract": "Address of the exchange contract"
+					}
+				}
+			},
+			"title": "Reward Contract",
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {
+				"constructor": {
+					"notice": "Contract constructor"
+				},
+				"distributeReward(address,uint256)": {
+					"notice": "Distributes reward to a trader"
+				},
+				"getExchangeContract()": {
+					"notice": "Gets the address of the associated exchange contract"
+				},
+				"getTraderWithdrawnReward(address)": {
+					"notice": "Gets the withdrawn reward for a trader"
+				},
+				"setExchangeContract(address)": {
+					"notice": "Sets the address of the associated exchange contract"
+				},
+				"withdraw()": {
+					"notice": "Withdraws the contract's ERC20 token balance to the owner"
+				}
+			},
+			"notice": "This contract distributes rewards to traders based on their trading activity.",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/Classes/reward.sol": "Reward"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 100
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/Classes/IMockERC20.sol": {
+			"keccak256": "0xf8968da19a847bfa4ab83ea1c23840209af9ae6697850183efac404df17e87f7",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://d816a6654d5611e7defc8f19f1175fc70510aaa949c7fa8729f0a0e4f754b81d",
+				"dweb:/ipfs/QmVFX2khKZa2kLZe19uZGy6TyfTm2gocvxX7JhTHQhpzMN"
+			]
+		},
+		"contracts/Classes/reward.sol": {
+			"keccak256": "0x4d46bd175b1195c4746c56fa5efeeaab4c7703e88012030819eff675a954c02c",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://a603dbc624a345dc87537eac68507285e95c0fa417d225767a814660dbcc45e9",
+				"dweb:/ipfs/QmVgEYj2CiktKygSe6oGBRWhcFChMJT5yyyH5JbpyWDKXH"
+			]
+		}
+	},
+	"version": 1
+}

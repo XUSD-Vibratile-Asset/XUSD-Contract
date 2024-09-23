@@ -1,0 +1,436 @@
+{
+	"id": "781e6592ad53fdc2046b898ccab2d80c",
+	"_format": "hh-sol-build-info-1",
+	"solcVersion": "0.8.27",
+	"solcLongVersion": "0.8.27+commit.40a35a09",
+	"input": {
+		"language": "Solidity",
+		"sources": {
+			"solidity/dysnomia/include/fa.sol": {
+				"content": "// SPDX-License-Identifier: Sharia\npragma solidity ^0.8.21;\n\nstruct Fa {\n        uint64 Base;\n        uint64 Secret;\n        uint64 Signal;\n        uint64 Channel;\n        uint64 Contour;\n        uint64 Pole;\n        uint64 Identity;\n        uint64 Foundation;\n        uint64 Element;\n        uint64 Coordinate;\n        uint64 Charge;\n        uint64 Chin;\n        uint64 Monopole;\n}"
+			}
+		},
+		"settings": {
+			"optimizer": {
+				"enabled": true,
+				"runs": 100
+			},
+			"outputSelection": {
+				"*": {
+					"": [
+						"ast"
+					],
+					"*": [
+						"abi",
+						"metadata",
+						"devdoc",
+						"userdoc",
+						"storageLayout",
+						"evm.legacyAssembly",
+						"evm.bytecode",
+						"evm.deployedBytecode",
+						"evm.methodIdentifiers",
+						"evm.gasEstimates",
+						"evm.assembly"
+					]
+				}
+			},
+			"remappings": []
+		}
+	},
+	"output": {
+		"sources": {
+			"solidity/dysnomia/include/fa.sol": {
+				"ast": {
+					"absolutePath": "solidity/dysnomia/include/fa.sol",
+					"exportedSymbols": {
+						"Fa": [
+							28
+						]
+					},
+					"id": 29,
+					"license": "Sharia",
+					"nodeType": "SourceUnit",
+					"nodes": [
+						{
+							"id": 1,
+							"literals": [
+								"solidity",
+								"^",
+								"0.8",
+								".21"
+							],
+							"nodeType": "PragmaDirective",
+							"src": "35:24:0"
+						},
+						{
+							"canonicalName": "Fa",
+							"id": 28,
+							"members": [
+								{
+									"constant": false,
+									"id": 3,
+									"mutability": "mutable",
+									"name": "Base",
+									"nameLocation": "88:4:0",
+									"nodeType": "VariableDeclaration",
+									"scope": 28,
+									"src": "81:11:0",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint64",
+										"typeString": "uint64"
+									},
+									"typeName": {
+										"id": 2,
+										"name": "uint64",
+										"nodeType": "ElementaryTypeName",
+										"src": "81:6:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint64",
+											"typeString": "uint64"
+										}
+									},
+									"visibility": "internal"
+								},
+								{
+									"constant": false,
+									"id": 5,
+									"mutability": "mutable",
+									"name": "Secret",
+									"nameLocation": "109:6:0",
+									"nodeType": "VariableDeclaration",
+									"scope": 28,
+									"src": "102:13:0",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint64",
+										"typeString": "uint64"
+									},
+									"typeName": {
+										"id": 4,
+										"name": "uint64",
+										"nodeType": "ElementaryTypeName",
+										"src": "102:6:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint64",
+											"typeString": "uint64"
+										}
+									},
+									"visibility": "internal"
+								},
+								{
+									"constant": false,
+									"id": 7,
+									"mutability": "mutable",
+									"name": "Signal",
+									"nameLocation": "132:6:0",
+									"nodeType": "VariableDeclaration",
+									"scope": 28,
+									"src": "125:13:0",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint64",
+										"typeString": "uint64"
+									},
+									"typeName": {
+										"id": 6,
+										"name": "uint64",
+										"nodeType": "ElementaryTypeName",
+										"src": "125:6:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint64",
+											"typeString": "uint64"
+										}
+									},
+									"visibility": "internal"
+								},
+								{
+									"constant": false,
+									"id": 9,
+									"mutability": "mutable",
+									"name": "Channel",
+									"nameLocation": "155:7:0",
+									"nodeType": "VariableDeclaration",
+									"scope": 28,
+									"src": "148:14:0",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint64",
+										"typeString": "uint64"
+									},
+									"typeName": {
+										"id": 8,
+										"name": "uint64",
+										"nodeType": "ElementaryTypeName",
+										"src": "148:6:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint64",
+											"typeString": "uint64"
+										}
+									},
+									"visibility": "internal"
+								},
+								{
+									"constant": false,
+									"id": 11,
+									"mutability": "mutable",
+									"name": "Contour",
+									"nameLocation": "179:7:0",
+									"nodeType": "VariableDeclaration",
+									"scope": 28,
+									"src": "172:14:0",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint64",
+										"typeString": "uint64"
+									},
+									"typeName": {
+										"id": 10,
+										"name": "uint64",
+										"nodeType": "ElementaryTypeName",
+										"src": "172:6:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint64",
+											"typeString": "uint64"
+										}
+									},
+									"visibility": "internal"
+								},
+								{
+									"constant": false,
+									"id": 13,
+									"mutability": "mutable",
+									"name": "Pole",
+									"nameLocation": "203:4:0",
+									"nodeType": "VariableDeclaration",
+									"scope": 28,
+									"src": "196:11:0",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint64",
+										"typeString": "uint64"
+									},
+									"typeName": {
+										"id": 12,
+										"name": "uint64",
+										"nodeType": "ElementaryTypeName",
+										"src": "196:6:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint64",
+											"typeString": "uint64"
+										}
+									},
+									"visibility": "internal"
+								},
+								{
+									"constant": false,
+									"id": 15,
+									"mutability": "mutable",
+									"name": "Identity",
+									"nameLocation": "224:8:0",
+									"nodeType": "VariableDeclaration",
+									"scope": 28,
+									"src": "217:15:0",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint64",
+										"typeString": "uint64"
+									},
+									"typeName": {
+										"id": 14,
+										"name": "uint64",
+										"nodeType": "ElementaryTypeName",
+										"src": "217:6:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint64",
+											"typeString": "uint64"
+										}
+									},
+									"visibility": "internal"
+								},
+								{
+									"constant": false,
+									"id": 17,
+									"mutability": "mutable",
+									"name": "Foundation",
+									"nameLocation": "249:10:0",
+									"nodeType": "VariableDeclaration",
+									"scope": 28,
+									"src": "242:17:0",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint64",
+										"typeString": "uint64"
+									},
+									"typeName": {
+										"id": 16,
+										"name": "uint64",
+										"nodeType": "ElementaryTypeName",
+										"src": "242:6:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint64",
+											"typeString": "uint64"
+										}
+									},
+									"visibility": "internal"
+								},
+								{
+									"constant": false,
+									"id": 19,
+									"mutability": "mutable",
+									"name": "Element",
+									"nameLocation": "276:7:0",
+									"nodeType": "VariableDeclaration",
+									"scope": 28,
+									"src": "269:14:0",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint64",
+										"typeString": "uint64"
+									},
+									"typeName": {
+										"id": 18,
+										"name": "uint64",
+										"nodeType": "ElementaryTypeName",
+										"src": "269:6:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint64",
+											"typeString": "uint64"
+										}
+									},
+									"visibility": "internal"
+								},
+								{
+									"constant": false,
+									"id": 21,
+									"mutability": "mutable",
+									"name": "Coordinate",
+									"nameLocation": "300:10:0",
+									"nodeType": "VariableDeclaration",
+									"scope": 28,
+									"src": "293:17:0",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint64",
+										"typeString": "uint64"
+									},
+									"typeName": {
+										"id": 20,
+										"name": "uint64",
+										"nodeType": "ElementaryTypeName",
+										"src": "293:6:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint64",
+											"typeString": "uint64"
+										}
+									},
+									"visibility": "internal"
+								},
+								{
+									"constant": false,
+									"id": 23,
+									"mutability": "mutable",
+									"name": "Charge",
+									"nameLocation": "327:6:0",
+									"nodeType": "VariableDeclaration",
+									"scope": 28,
+									"src": "320:13:0",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint64",
+										"typeString": "uint64"
+									},
+									"typeName": {
+										"id": 22,
+										"name": "uint64",
+										"nodeType": "ElementaryTypeName",
+										"src": "320:6:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint64",
+											"typeString": "uint64"
+										}
+									},
+									"visibility": "internal"
+								},
+								{
+									"constant": false,
+									"id": 25,
+									"mutability": "mutable",
+									"name": "Chin",
+									"nameLocation": "350:4:0",
+									"nodeType": "VariableDeclaration",
+									"scope": 28,
+									"src": "343:11:0",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint64",
+										"typeString": "uint64"
+									},
+									"typeName": {
+										"id": 24,
+										"name": "uint64",
+										"nodeType": "ElementaryTypeName",
+										"src": "343:6:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint64",
+											"typeString": "uint64"
+										}
+									},
+									"visibility": "internal"
+								},
+								{
+									"constant": false,
+									"id": 27,
+									"mutability": "mutable",
+									"name": "Monopole",
+									"nameLocation": "371:8:0",
+									"nodeType": "VariableDeclaration",
+									"scope": 28,
+									"src": "364:15:0",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint64",
+										"typeString": "uint64"
+									},
+									"typeName": {
+										"id": 26,
+										"name": "uint64",
+										"nodeType": "ElementaryTypeName",
+										"src": "364:6:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint64",
+											"typeString": "uint64"
+										}
+									},
+									"visibility": "internal"
+								}
+							],
+							"name": "Fa",
+							"nameLocation": "68:2:0",
+							"nodeType": "StructDefinition",
+							"scope": 29,
+							"src": "61:321:0",
+							"visibility": "public"
+						}
+					],
+					"src": "35:347:0"
+				},
+				"id": 0
+			}
+		}
+	}
+}
