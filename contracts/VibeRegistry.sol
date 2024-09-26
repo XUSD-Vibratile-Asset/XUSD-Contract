@@ -4,11 +4,11 @@ pragma solidity ^0.8.26;
 import './Address.sol';
 import './VibeLibRegistry.sol';
 import "./registry.sol";
-import "./AccessorMod.sol";
-import "./atropamath.sol";
-import "./XUSD1.sol";
-import "./Classes/VibeBase.sol";
-import "hardhat/console.sol";
+import "./AccessControl/AccessorMod.sol";
+import "./math/atropamath.sol";
+import "./XUSD.sol";
+import "./vibes/VibeBase.sol";
+
 /**
  * @title VibeRegistry
  * @dev This contract manages user vibes, class structures, and reward distribution through multiple registries.
@@ -118,7 +118,7 @@ contract VibeRegistry is AccesorMod {
      */
     constructor(address _accessControl, address _xusd) AccesorMod(_accessControl) {
         xusd = XUSD(_xusd);
-        console.log("no");
+  
     }
 
     /**
@@ -175,6 +175,69 @@ contract VibeRegistry is AccesorMod {
     }
 
     /**
+ * @notice View function to calculate the current total vibe of a user.
+ * @param user The address of the user whose vibe you want to calculate.
+ * @return The total vibes of the user.
+ */
+function calculateCurrentVibe(address user) external  returns (int) {
+    int totalVibes = 0;
+    
+    // Iterate over the "to" registry for vibe classes
+    totalVibes += _calculateVibesForAddressView(user, MasterClassToRegistry, MasterClassToMap);
+
+    // Iterate over the "from" registry for vibe classes
+    totalVibes += _calculateVibesForAddressView(user, MasterClassFromRegistry, MasterClassFromMap);
+
+    // Iterate over the "caller" registry for vibe classes
+    totalVibes += _calculateVibesForAddressView(user, MasterClassCallerRegistry, MasterClassCallerMap);
+
+    // Iterate over the "sender" registry for vibe classes
+    totalVibes += _calculateVibesForAddressView(user, MasterClassSenderRegistry, MasterClassSenderMap);
+
+    // Ensure that the total vibes stay within the range 0-9999
+    totalVibes = totalVibes < int(0) ? int(0) : totalVibes > int(9999) ? int(9999) : totalVibes;
+
+    return totalVibes;
+}
+
+/**
+ * @dev Internal view function to calculate vibes for a given user from a registry.
+ * This function does not modify state and is safe to be used within a view function.
+ * @param user The user address to calculate vibes for.
+ * @param registry The registry to query classes from.
+ * @param classMap Mapping from class addresses to MaterClass structs.
+ * @return The calculated vibes for this specific registry.
+ */
+function _calculateVibesForAddressView(
+    address user,
+    VibeLibRegistry.Registry storage registry,
+    mapping(address => MaterClass) storage classMap
+) internal  returns (int) {
+    int sumVibes = 0;
+
+    uint count = registry.Count() >= classLimit ? classLimit : registry.Count();
+
+    for (uint i = 0; i < count; i++) {
+        address classAddress = registry.GetHashByIndex(i);
+        MaterClass storage vibeClass = classMap[classAddress];
+        uint Omnicron = user.hashWith(vibeClass.classAddress);
+        bool userHasVibe = userClassVibe[Omnicron].timestamp != 0;
+
+        if (userHasVibe && userClassVibe[Omnicron].timestamp > vibeClass.updatedTimestamp) {
+            sumVibes += userClassVibe[Omnicron].vibes;
+        } else {
+            try IVibeCalculator(vibeClass.classAddress).calculateTotalBasisFee(user, 0) returns (int _vibes) {
+                sumVibes += _vibes;
+            } catch {
+                // If there's an issue calculating vibes, ignore this class
+            }
+        }
+    }
+
+    return sumVibes;
+}
+
+    /**
      * @notice Deactivates and removes a class from the specified registry.
      * @param class The address of the class to be removed.
      * @param classType The type of class (0: To, 1: From, 2: Caller, 3: Sender, 4: Contract).
@@ -210,8 +273,8 @@ contract VibeRegistry is AccesorMod {
         address _caller,
         address sender,
         uint amount
-    ) external nonReentrant returns (int, uint) {
-        console.logAddress(to);
+    ) external  returns (int, uint) {
+ 
         int sumVibes = 0;
         int vibe = 0;
 
@@ -238,7 +301,7 @@ contract VibeRegistry is AccesorMod {
         }
 
         emit VibesCalculated(_caller, sumVibes);
-        console.logInt(sumVibes);
+ 
 
         return (sumVibes, amount);
     }
@@ -312,7 +375,7 @@ function viewVibes(address user) external view returns (int) {
             }
         }
 
-        console.logInt(sumVibes);
+
         emit MasterClassVibesUpdated(user, sumVibes);
         return (sumVibes, amount);
     }
@@ -355,6 +418,40 @@ function calculateRewards(
         }
 
         unchecked {
+            i++;
+        }
+    }
+}
+
+function showAllVibeClasses() external returns(MaterClass [] memory){
+MaterClass[] memory classes;
+uint indexer = 0;
+    for(uint i; i < MasterClassFromRegistry.Count(); ){
+        classes[indexer] = MasterClassFromMap[MasterClassFromRegistry.GetHashByIndex(i)];
+        indexer++;
+        unchecked{
+            i++;
+        }
+    }
+     for(uint i; i < MasterClassToRegistry.Count(); ){
+        classes[indexer] = MasterClassToMap[MasterClassToRegistry.GetHashByIndex(i)];
+        indexer++;
+        unchecked{
+            i++;
+        }
+    }
+     for(uint i; i < MasterClassCallerRegistry.Count(); ){
+        classes[indexer] = MasterClassCallerMap[MasterClassCallerRegistry.GetHashByIndex(i)];
+        indexer++;
+        unchecked{
+            i++;
+        }
+    }
+   
+     for(uint i; i < MasterClassSenderRegistry.Count(); ){
+        classes[indexer] = MasterClassSenderMap[MasterClassSenderRegistry.GetHashByIndex(i)];
+        indexer++;
+        unchecked{
             i++;
         }
     }

@@ -26,32 +26,33 @@ Update a user&#39;s vote balance based on burn amount.
 |---|---|---|
 | user | address | The address of the user to update. |
 
-### VibReg
+### _transferVibePass
 
 ```solidity
-function VibReg() external view returns (contract VibeRegistry)
+function _transferVibePass(address from, address to, uint256 tokenId) external nonpayable
 ```
 
 
 
+*Internal function to transfer a VibePass from one user to another.*
 
-
-
-#### Returns
+#### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | contract VibeRegistry | undefined |
+| from | address | The address of the current owner. |
+| to | address | The address of the new owner. |
+| tokenId | uint256 | The token ID to transfer. |
 
 ### approve
 
 ```solidity
-function approve(address to, uint256 tokenId) external nonpayable
+function approve(address to, uint256 tokenId) external payable
 ```
 
 
 
-*See {IERC721-approve}.*
+*Gives permission to `to` to transfer `tokenId` token to another account. See {ERC721A-_approve}. Requirements: - The caller must own the token or be an approved operator.*
 
 #### Parameters
 
@@ -68,7 +69,7 @@ function balanceOf(address owner) external view returns (uint256)
 
 
 
-*See {IERC721-balanceOf}.*
+*Returns the number of tokens in `owner`&#39;s account.*
 
 #### Parameters
 
@@ -82,16 +83,22 @@ function balanceOf(address owner) external view returns (uint256)
 |---|---|---|
 | _0 | uint256 | undefined |
 
-### checkRank
+### getAllUsersInfo
 
 ```solidity
-function checkRank() external nonpayable
+function getAllUsersInfo() external view returns (struct VibePass.Nft[])
 ```
 
-Check if the caller qualifies for the gladiator rank and update rank if applicable.
+Returns information about all users who own a VibePass, up to the user limit.
 
 
 
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | VibePass.Nft[] | An array of user addresses and an array of structs containing user info. |
 
 ### getApproved
 
@@ -101,7 +108,7 @@ function getApproved(uint256 tokenId) external view returns (address)
 
 
 
-*See {IERC721-getApproved}.*
+*Returns the account approved for `tokenId` token. Requirements: - `tokenId` must exist.*
 
 #### Parameters
 
@@ -115,32 +122,10 @@ function getApproved(uint256 tokenId) external view returns (address)
 |---|---|---|
 | _0 | address | undefined |
 
-### getBurnAmounts
+### getBurnAmountsEoa
 
 ```solidity
-function getBurnAmounts(uint256 id) external view returns (uint256)
-```
-
-Get the current burn amount of the VibePass.
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| id | uint256 | The token ID of the VibePass. |
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | uint256 | The current burn amount. |
-
-### getBurnAmountsOrigin
-
-```solidity
-function getBurnAmountsOrigin(uint256 id) external view returns (uint256)
+function getBurnAmountsEoa(uint256 id) external view returns (uint256)
 ```
 
 Get the original burn amount of the VibePass.
@@ -158,6 +143,28 @@ Get the original burn amount of the VibePass.
 | Name | Type | Description |
 |---|---|---|
 | _0 | uint256 | The original burn amount. |
+
+### getUserInfo
+
+```solidity
+function getUserInfo(address user) external view returns (struct VibePass.Nft)
+```
+
+Returns the VibePass information for a specific user.
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| user | address | The address of the user whose VibePass information you want to retrieve. |
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | VibePass.Nft | A struct containing the user&#39;s VibePass information. |
 
 ### getUsername
 
@@ -189,7 +196,7 @@ function isApprovedForAll(address owner, address operator) external view returns
 
 
 
-*See {IERC721-isApprovedForAll}.*
+*Returns if the `operator` is allowed to manage all of the assets of `owner`. See {setApprovalForAll}.*
 
 #### Parameters
 
@@ -223,7 +230,7 @@ function name() external view returns (string)
 
 
 
-*See {IERC721Metadata-name}.*
+*Returns the token collection name.*
 
 
 #### Returns
@@ -231,23 +238,6 @@ function name() external view returns (string)
 | Name | Type | Description |
 |---|---|---|
 | _0 | string | undefined |
-
-### oneSwap
-
-```solidity
-function oneSwap() external view returns (address)
-```
-
-
-
-
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | address | undefined |
 
 ### ownerOf
 
@@ -257,7 +247,7 @@ function ownerOf(uint256 tokenId) external view returns (address)
 
 
 
-*See {IERC721-ownerOf}.*
+*Returns the owner of the `tokenId` token. Requirements: - `tokenId` must exist.*
 
 #### Parameters
 
@@ -270,23 +260,6 @@ function ownerOf(uint256 tokenId) external view returns (address)
 | Name | Type | Description |
 |---|---|---|
 | _0 | address | undefined |
-
-### pDecay
-
-```solidity
-function pDecay() external view returns (contract PriceSlowDecay)
-```
-
-
-
-
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | contract PriceSlowDecay | undefined |
 
 ### purchaseAmount
 
@@ -308,7 +281,7 @@ function purchaseAmount() external view returns (uint256)
 ### safeTransferFrom
 
 ```solidity
-function safeTransferFrom(address from, address to, uint256 tokenId) external nonpayable
+function safeTransferFrom(address from, address to, uint256 tokenId) external payable
 ```
 
 
@@ -326,21 +299,21 @@ function safeTransferFrom(address from, address to, uint256 tokenId) external no
 ### safeTransferFrom
 
 ```solidity
-function safeTransferFrom(address from, address to, uint256 tokenId, bytes data) external nonpayable
+function safeTransferFrom(address from, address to, uint256 tokenId, bytes data) external payable
 ```
 
-Safely transfers the VibePass from one user to another.
 
-*Only callable by the Consul.*
+
+*See {IERC721-safeTransferFrom}.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| from | address | The address of the current owner. |
-| to | address | The address of the new owner. |
-| tokenId | uint256 | The token ID to transfer. |
-| data | bytes | Additional data for the transfer. |
+| from | address | undefined |
+| to | address | undefined |
+| tokenId | uint256 | undefined |
+| data | bytes | undefined |
 
 ### setApprovalForAll
 
@@ -350,7 +323,7 @@ function setApprovalForAll(address operator, bool approved) external nonpayable
 
 
 
-*See {IERC721-setApprovalForAll}.*
+*Approve or remove `operator` as an operator for the caller. Operators can call {transferFrom} or {safeTransferFrom} for any token owned by the caller. Requirements: - The `operator` cannot be the caller. Emits an {ApprovalForAll} event.*
 
 #### Parameters
 
@@ -392,6 +365,22 @@ Set the URI for a VibePass holder.
 | user | address | The address of the user whose URI is being updated. |
 | Url | string | The new URI. |
 
+### setUserLimit
+
+```solidity
+function setUserLimit(uint256 limit) external nonpayable
+```
+
+Set a limit on how many users can be returned.
+
+*Only callable by the Consul.*
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| limit | uint256 | The new limit for how many users can be returned. |
+
 ### setUserName
 
 ```solidity
@@ -432,7 +421,7 @@ function supportsInterface(bytes4 interfaceId) external view returns (bool)
 
 
 
-*See {IERC165-supportsInterface}.*
+*Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding [EIP section](https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified) to learn more about how these ids are created. This function call must use less than 30000 gas.*
 
 #### Parameters
 
@@ -454,7 +443,7 @@ function symbol() external view returns (string)
 
 
 
-*See {IERC721Metadata-symbol}.*
+*Returns the token collection symbol.*
 
 
 #### Returns
@@ -463,116 +452,27 @@ function symbol() external view returns (string)
 |---|---|---|
 | _0 | string | undefined |
 
-### tokenByIndex
-
-```solidity
-function tokenByIndex(uint256 index) external view returns (uint256)
-```
-
-
-
-*See {IERC721Enumerable-tokenByIndex}.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| index | uint256 | undefined |
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | uint256 | undefined |
-
-### tokenIdByOwner
-
-```solidity
-function tokenIdByOwner(address _owner) external view returns (uint256)
-```
-
-Get the token ID owned by a specific user.
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| _owner | address | The address of the user to query. |
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | uint256 | The token ID owned by the user. |
-
-### tokenOfOwnerByIndex
-
-```solidity
-function tokenOfOwnerByIndex(address owner, uint256 index) external view returns (uint256)
-```
-
-
-
-*See {IERC721Enumerable-tokenOfOwnerByIndex}.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| owner | address | undefined |
-| index | uint256 | undefined |
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | uint256 | undefined |
-
-### tokenOwnerFromId
-
-```solidity
-function tokenOwnerFromId(uint256 id) external view returns (address)
-```
-
-Get the owner address of the specified token ID.
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| id | uint256 | The token ID to query. |
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | address | The address of the token owner. |
-
 ### tokenURI
 
 ```solidity
 function tokenURI(uint256 tokenId) external view returns (string)
 ```
 
-Get the URI of the specified token ID.
 
 
+*Returns the Uniform Resource Identifier (URI) for `tokenId` token.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| tokenId | uint256 | The ID of the token to get the URI for. |
+| tokenId | uint256 | undefined |
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | string | The URI of the specified token ID. |
+| _0 | string | undefined |
 
 ### totalSupply
 
@@ -582,7 +482,7 @@ function totalSupply() external view returns (uint256)
 
 
 
-*See {IERC721Enumerable-totalSupply}.*
+*Returns the total number of tokens in existence. Burned tokens will reduce the count. To get the total number of tokens minted, please see {_totalMinted}.*
 
 
 #### Returns
@@ -594,42 +494,37 @@ function totalSupply() external view returns (uint256)
 ### transferFrom
 
 ```solidity
-function transferFrom(address from, address to, uint256 tokenId) external nonpayable
+function transferFrom(address from, address to, uint256 tokenId) external payable
 ```
 
-Transfers the VibePass from one user to another.
 
-*Only callable by the Consul.*
+
+*See {IERC721-transferFrom}.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| from | address | The address of the current owner. |
-| to | address | The address of the new owner. |
-| tokenId | uint256 | The token ID to transfer. |
+| from | address | undefined |
+| to | address | undefined |
+| tokenId | uint256 | undefined |
 
-### viewUrl
+### userLimit
 
 ```solidity
-function viewUrl(address user) external view returns (string)
+function userLimit() external view returns (uint256)
 ```
 
-View the URI associated with a user&#39;s VibePass.
 
 
 
-#### Parameters
 
-| Name | Type | Description |
-|---|---|---|
-| user | address | The address of the user. |
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | string | The URI of the user&#39;s VibePass. |
+| _0 | uint256 | undefined |
 
 ### withdrawOneswap
 
@@ -639,25 +534,8 @@ function withdrawOneswap() external nonpayable
 
 Withdraw funds from OneSwap contract.
 
-*Only callable by the Consul.*
+*Only callable by the Preatormaximus.*
 
-
-### xusd
-
-```solidity
-function xusd() external view returns (address)
-```
-
-
-
-
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | address | undefined |
 
 
 
@@ -698,6 +576,25 @@ event ApprovalForAll(address indexed owner, address indexed operator, bool appro
 | owner `indexed` | address | undefined |
 | operator `indexed` | address | undefined |
 | approved  | bool | undefined |
+
+### ConsecutiveTransfer
+
+```solidity
+event ConsecutiveTransfer(uint256 indexed fromTokenId, uint256 toTokenId, address indexed from, address indexed to)
+```
+
+
+
+*Emitted when tokens in `fromTokenId` to `toTokenId` (inclusive) is transferred from `from` to `to`, as defined in the [ERC2309](https://eips.ethereum.org/EIPS/eip-2309) standard. See {_mintERC2309} for more details.*
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| fromTokenId `indexed` | uint256 | undefined |
+| toTokenId  | uint256 | undefined |
+| from `indexed` | address | undefined |
+| to `indexed` | address | undefined |
 
 ### GladiatorRankUpdated
 
@@ -803,6 +700,22 @@ event URIUpdated(address indexed user, string newURI)
 | user `indexed` | address | undefined |
 | newURI  | string | undefined |
 
+### UserGladiatorRankUpgrade
+
+```solidity
+event UserGladiatorRankUpgrade(address user)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| user  | address | undefined |
+
 ### UserNameUpdated
 
 ```solidity
@@ -819,6 +732,23 @@ event UserNameUpdated(address indexed user, string newUserName)
 |---|---|---|
 | user `indexed` | address | undefined |
 | newUserName  | string | undefined |
+
+### VotesUpdated
+
+```solidity
+event VotesUpdated(address indexed user, uint256 newVotes)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| user `indexed` | address | undefined |
+| newVotes  | uint256 | undefined |
 
 ### XusdAddressUpdated
 
@@ -841,164 +771,82 @@ event XusdAddressUpdated(address indexed updater, address newXusd)
 
 ## Errors
 
-### ERC721EnumerableForbiddenBatchMint
+### ApprovalCallerNotOwnerNorApproved
 
 ```solidity
-error ERC721EnumerableForbiddenBatchMint()
+error ApprovalCallerNotOwnerNorApproved()
+```
+
+The caller must own the token or be an approved operator.
+
+
+
+
+### ApprovalQueryForNonexistentToken
+
+```solidity
+error ApprovalQueryForNonexistentToken()
+```
+
+The token does not exist.
+
+
+
+
+### BalanceQueryForZeroAddress
+
+```solidity
+error BalanceQueryForZeroAddress()
+```
+
+Cannot query the balance for the zero address.
+
+
+
+
+### MintERC2309QuantityExceedsLimit
+
+```solidity
+error MintERC2309QuantityExceedsLimit()
+```
+
+The `quantity` minted with ERC2309 exceeds the safety limit.
+
+
+
+
+### MintToZeroAddress
+
+```solidity
+error MintToZeroAddress()
+```
+
+Cannot mint to the zero address.
+
+
+
+
+### MintZeroQuantity
+
+```solidity
+error MintZeroQuantity()
+```
+
+The quantity of tokens minted must be more than zero.
+
+
+
+
+### NotAllowedToTransfer
+
+```solidity
+error NotAllowedToTransfer()
 ```
 
 
 
-*Batch mint is not allowed.*
 
 
-### ERC721IncorrectOwner
-
-```solidity
-error ERC721IncorrectOwner(address sender, uint256 tokenId, address owner)
-```
-
-
-
-*Indicates an error related to the ownership over a particular token. Used in transfers.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| sender | address | Address whose tokens are being transferred. |
-| tokenId | uint256 | Identifier number of a token. |
-| owner | address | Address of the current owner of a token. |
-
-### ERC721InsufficientApproval
-
-```solidity
-error ERC721InsufficientApproval(address operator, uint256 tokenId)
-```
-
-
-
-*Indicates a failure with the `operator`’s approval. Used in transfers.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| operator | address | Address that may be allowed to operate on tokens without being their owner. |
-| tokenId | uint256 | Identifier number of a token. |
-
-### ERC721InvalidApprover
-
-```solidity
-error ERC721InvalidApprover(address approver)
-```
-
-
-
-*Indicates a failure with the `approver` of a token to be approved. Used in approvals.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| approver | address | Address initiating an approval operation. |
-
-### ERC721InvalidOperator
-
-```solidity
-error ERC721InvalidOperator(address operator)
-```
-
-
-
-*Indicates a failure with the `operator` to be approved. Used in approvals.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| operator | address | Address that may be allowed to operate on tokens without being their owner. |
-
-### ERC721InvalidOwner
-
-```solidity
-error ERC721InvalidOwner(address owner)
-```
-
-
-
-*Indicates that an address can&#39;t be an owner. For example, `address(0)` is a forbidden owner in EIP-20. Used in balance queries.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| owner | address | Address of the current owner of a token. |
-
-### ERC721InvalidReceiver
-
-```solidity
-error ERC721InvalidReceiver(address receiver)
-```
-
-
-
-*Indicates a failure with the token `receiver`. Used in transfers.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| receiver | address | Address to which tokens are being transferred. |
-
-### ERC721InvalidSender
-
-```solidity
-error ERC721InvalidSender(address sender)
-```
-
-
-
-*Indicates a failure with the token `sender`. Used in transfers.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| sender | address | Address whose tokens are being transferred. |
-
-### ERC721NonexistentToken
-
-```solidity
-error ERC721NonexistentToken(uint256 tokenId)
-```
-
-
-
-*Indicates a `tokenId` whose `owner` is the zero address.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| tokenId | uint256 | Identifier number of a token. |
-
-### ERC721OutOfBoundsIndex
-
-```solidity
-error ERC721OutOfBoundsIndex(address owner, uint256 index)
-```
-
-
-
-*An `owner`&#39;s token query was out of bounds for `index`. NOTE: The owner being `address(0)` indicates a global out of bounds index.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| owner | address | undefined |
-| index | uint256 | undefined |
 
 ### NotRankedForVibePass
 
@@ -1011,24 +859,79 @@ error NotRankedForVibePass()
 
 
 
-### OwnerDoesNotHoldId
+### OwnerQueryForNonexistentToken
 
 ```solidity
-error OwnerDoesNotHoldId()
+error OwnerQueryForNonexistentToken()
 ```
 
+The token does not exist.
 
 
 
 
-
-### UserDoesNotOwnVibePassId
+### OwnershipNotInitializedForExtraData
 
 ```solidity
-error UserDoesNotOwnVibePassId()
+error OwnershipNotInitializedForExtraData()
 ```
 
+The `extraData` cannot be set on an unintialized ownership slot.
 
+
+
+
+### TransferCallerNotOwnerNorApproved
+
+```solidity
+error TransferCallerNotOwnerNorApproved()
+```
+
+The caller must own the token or be an approved operator.
+
+
+
+
+### TransferFromIncorrectOwner
+
+```solidity
+error TransferFromIncorrectOwner()
+```
+
+The token must be owned by `from`.
+
+
+
+
+### TransferToNonERC721ReceiverImplementer
+
+```solidity
+error TransferToNonERC721ReceiverImplementer()
+```
+
+Cannot safely transfer to a contract that does not implement the ERC721Receiver interface.
+
+
+
+
+### TransferToZeroAddress
+
+```solidity
+error TransferToZeroAddress()
+```
+
+Cannot transfer to the zero address.
+
+
+
+
+### URIQueryForNonexistentToken
+
+```solidity
+error URIQueryForNonexistentToken()
+```
+
+The token does not exist.
 
 
 
@@ -1055,32 +958,10 @@ error VibePassCanOnlyHoldOne()
 
 
 
-### VibePassDelegated
+### VibePassNonExistent
 
 ```solidity
-error VibePassDelegated()
-```
-
-
-
-
-
-
-### VibePassNonExistant
-
-```solidity
-error VibePassNonExistant()
-```
-
-
-
-
-
-
-### VibePassNotDelegated
-
-```solidity
-error VibePassNotDelegated()
+error VibePassNonExistent()
 ```
 
 

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Sharia
 pragma solidity ^0.8.24;
-import "./Classes/VibeBase.sol";
+import "./vibes/VibeBase.sol";
 library VibeLibRegistry {
   
 

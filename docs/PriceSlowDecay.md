@@ -33,16 +33,16 @@ function duration() external view returns (uint256)
 function getCurrentPrice() external view returns (uint256)
 ```
 
+Returns the current price based on the time elapsed.
 
-
-
+*Implements a quadratic decay function: (1 - (elapsedTime / duration)^2).      The price decays smoothly from `initialPrice` to `minPrice` over `duration`.      Uses FixedPointMathLib for precise arithmetic operations.*
 
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined |
+| _0 | uint256 | The current price of the asset based on the decay curve. |
 
 ### initialPrice
 

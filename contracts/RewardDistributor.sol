@@ -10,7 +10,7 @@ import "./Classes/VibeBase.sol";
 import "./IPancackePair.sol";
 import "./epochManager.sol";
 import "../solidity/dysnomia/00b_vmreq.sol";
-import "hardhat/console.sol";
+
 
 /**
  * @title RewardDistributor
@@ -39,15 +39,16 @@ contract RewardDistributor is EpochManager, AccesorMod, VibeBase {
 
     // State variables
     uint256 public totalSupply; /// @notice Total token pool available for rewards
-    uint256 public dailyMax = 3_000_000 * 1e18; /// @notice Maximum tokens distributed daily
-    uint256 public dailyMaxPerLp = 500_000 * 1e18; /// @notice Max tokens per LP per day
-    uint256 public dailyMaxPerUserLp = 10_000 * 1e18; /// @notice Max tokens per user per LP per day
+    uint256 public dailyMax = 1_500_000 * 1e18; /// @notice Maximum tokens distributed daily
+    uint256 public dailyMaxPerLp = 250_000 * 1e18; /// @notice Max tokens per LP per day
+    uint256 public dailyMaxPerUserLp = 2_500 * 1e18; /// @notice Max tokens per user per LP per day
     uint256 public swapMultiplier = 1000;
     uint public randomMultiplier = 100;
     uint public divisor = 4;
     int public vibeLimit = 450;
     address public xusd; /// @notice Address of XUSD token
-
+    uint public sellMultiplier = 3e18;
+    uint public buyMultiplier = 1e18;
     VMREQ public maths; /// @notice External math library
     uint256 public immutable maxValue = 450;
     uint public globalEpoch; /// @notice Current epoch
@@ -112,7 +113,7 @@ contract RewardDistributor is EpochManager, AccesorMod, VibeBase {
         address _access,
         address _maths,
         VibeInfo memory _id
-    ) EpochManager(5) VibeBase(_id, _access) {
+    ) EpochManager(21600) VibeBase(_id, _access) {
         xusd = _xusd;
         owner = msg.sender;
         maths = VMREQ(_maths);
@@ -136,6 +137,11 @@ contract RewardDistributor is EpochManager, AccesorMod, VibeBase {
      */
     function changeEpochLength(uint length) external onlyConsul {
         epochDuration = length;
+    }
+
+    function changeBuySellMultipliers(uint buy, uint sell)external onlyConsul(){
+        buyMultiplier = buy;
+        sellMultiplier = sell;
     }
 
     function getDatesArray() external view returns (uint[] memory) {
@@ -225,7 +231,7 @@ contract RewardDistributor is EpochManager, AccesorMod, VibeBase {
         uint256 _amount,
         int256 vibes
     ) external updateEpoch onlyConsul nonReentrant() {
-        console.logUint(_amount);
+  
         _processRewards(_from, _amount, vibes, false);
         _processRewards(_to, _amount, vibes, true);
     }
@@ -270,7 +276,7 @@ contract RewardDistributor is EpochManager, AccesorMod, VibeBase {
 
         userGains.accumulatedVolume += amount;
         uint value = calculateRandomRewards(uint(vibes), sell, amount);
-        console.logUint(value);
+    
         if (value + userGains.totalRewards >= dailyMaxPerUserLp) {
             value = dailyMaxPerUserLp - userGains.totalRewards;
             userGains.maxed = true;
@@ -290,7 +296,7 @@ contract RewardDistributor is EpochManager, AccesorMod, VibeBase {
      */
     function _initializeUserGains(UserGains storage userGains, address lpAddress, uint256 amount, int256 vibes, bool sell) internal {
         uint value = calculateRandomRewards(uint(vibes), sell, amount);
-        console.logUint(value);
+   
         if (value >= dailyMaxPerUserLp) {
             value = dailyMaxPerUserLp;
             userGains.maxed = true;
@@ -326,8 +332,9 @@ contract RewardDistributor is EpochManager, AccesorMod, VibeBase {
      * @return uint The calculated reward value
      */
     function calculateRandomRewards(uint vibes, bool sell, uint amount) internal returns (uint) {
-        uint value = (amount * getInverse(vibes) * maths.Random()) / (sell ? 3e18 : 1e18);
+        uint value = (amount * getInverse(vibes) * maths.Random()) / (sell ? sellMultiplier : buyMultiplier);
         dailyRewards[globalEpoch] += value > dailyMaxPerUserLp ? dailyMaxPerUserLp : value;
+     
         return value;
     }
 
@@ -379,14 +386,13 @@ contract RewardDistributor is EpochManager, AccesorMod, VibeBase {
                 for (uint j = 0; j < whitelistedLp.length; j++) {
                     uint hashKey = hashKeyStorage[user][whitelistedLp[j].lpAddress];
                     UserGains memory userGains = dailyUserTotalRewards[user][epochArray[i]][hashKey];
-                    console.logUint(userGains.totalRewards);
+                    
                     totalValue += userGains.totalRewards;
                 }
             }
         }
 
-        console.logUint(totalValue);
-        console.logAddress(user);
+
 
         return totalValue;
     }

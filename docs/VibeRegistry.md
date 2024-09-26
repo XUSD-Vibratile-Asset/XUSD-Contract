@@ -89,6 +89,28 @@ Calculates vibes for multiple addresses, sums them, and applies to the caller.
 | _0 | int256 | The sum of calculated vibes and the original amount. |
 | _1 | uint256 | undefined |
 
+### calculateCurrentVibe
+
+```solidity
+function calculateCurrentVibe(address user) external nonpayable returns (int256)
+```
+
+View function to calculate the current total vibe of a user.
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| user | address | The address of the user whose vibe you want to calculate. |
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | int256 | The total vibes of the user. |
+
 ### deactivateVibe
 
 ```solidity
@@ -154,6 +176,23 @@ Sets a contract as whitelisted for vibe calculations.
 | Name | Type | Description |
 |---|---|---|
 | contractWhite | address | The address of the contract to whitelist. |
+
+### showAllVibeClasses
+
+```solidity
+function showAllVibeClasses() external nonpayable returns (struct VibeRegistry.MaterClass[])
+```
+
+
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | VibeRegistry.MaterClass[] | undefined |
 
 ### viewVibes
 

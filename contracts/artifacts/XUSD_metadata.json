@@ -493,7 +493,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/XUSD1.sol": "XUSD"
+			"contracts/xusd.sol": "XUSD"
 		},
 		"evmVersion": "shanghai",
 		"libraries": {},
@@ -826,7 +826,7 @@
 				"dweb:/ipfs/QmX24gsrsCoHmQW9kCfuspMVqBk1N8ASdTHY9vUQg8UgRv"
 			]
 		},
-		"contracts/XUSD1.sol": {
+		"contracts/xusd.sol": {
 			"keccak256": "0x634e95ce04091ea7ce7b7d9983d3d530cdca14ad1ffb7769a18b85dc1d61d73d",
 			"license": "MIT",
 			"urls": [

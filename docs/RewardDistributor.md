@@ -66,6 +66,23 @@ Adds a new LP to the whitelist by an admin.
 | account | address | Address of the LP |
 | router | address | Router address associated with the LP |
 
+### buyMultiplier
+
+```solidity
+function buyMultiplier() external view returns (uint256)
+```
+
+
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint256 | undefined |
+
 ### calculateRewards
 
 ```solidity
@@ -109,6 +126,23 @@ function calculateTotalBasisFee(address addy, uint256 amount) external nonpayabl
 | Name | Type | Description |
 |---|---|---|
 | _0 | int256 | undefined |
+
+### changeBuySellMultipliers
+
+```solidity
+function changeBuySellMultipliers(uint256 buy, uint256 sell) external nonpayable
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| buy | uint256 | undefined |
+| sell | uint256 | undefined |
 
 ### changeEpochLength
 
@@ -598,7 +632,7 @@ function lpList(address) external view returns (bool)
 function maths() external view returns (contract VMREQ)
 ```
 
-Address of XUSD token
+
 
 
 
@@ -633,6 +667,23 @@ function randomMultiplier() external view returns (uint256)
 ```
 
 
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint256 | undefined |
+
+### sellMultiplier
+
+```solidity
+function sellMultiplier() external view returns (uint256)
+```
+
+Address of XUSD token
 
 
 

@@ -27,18 +27,46 @@ solidity: {
   },
   networks: {
     pulsechain: {
-      url:  `http://127.0.0.1:8545/`,
+      url:  `https://rpc.pulsechain.com/`,
       accounts: [process.env.PK],
      
     },
     
   },
   etherscan: {
+    // Your API key for Etherscan
+    // Obtain one at https://etherscan.io/
     apiKey: {
 
-        "polygon-mainnet": "TUCW8DV1FFPPUYFJRVBMNKQM69IU7CWYHF" || ``,
-        
+      pulsechain: "https://api.scan.pulsechain.com/api/",
     },
+    customChains: [
+      {
+        network: "metis",
+        chainId: 1088,
+        urls: {
+          apiURL: "https://andromeda-explorer.metis.io/api",
+          browserURL: "https://andromeda-explorer.metis.io/",
+        },
+      },
+      {
+      network: "pulsechain",
+  chainId: 369,
+  urls: {
+    apiURL: "https://api.scan.pulsechain.com/api/",
+    browserURL: "https://scan.v3.testnet.pulsechain.com",
+  },
+},
+      {
+        network: "zkevm",
+        chainId: 1101,
+        urls: {
+          apiURL: "https://api-zkevm.polygonscan.com/api",
+          browserURL: "https://zkevm.polygonscan.com/",
+        },
+      },
+    ],
+  
 },
   
 };

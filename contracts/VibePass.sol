@@ -1,50 +1,53 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "./ERC721A.sol";
+
 import "./registry.sol";
-import "./atropamath.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "./Access.sol";
+import "./math/atropamath.sol";
+
+import "./AccessControl/Access.sol";
 import "./VibeRegistry.sol";
 import "./PriceDecay.sol";
-import "./AccessorMod.sol";
-
-interface IXUSD {
-    function burnBalance(address user) external view returns (uint256);
-    function burnBalanceOrigin(address user) external view returns (uint256);
-    function totalBurned() external view returns (uint);
-}
+import "./interface/IXUSD.sol";
+import "./AccessControl/AccessorMod.sol";
 
 /**
  * @title VibePass
  * @dev ERC721 token representing a VibePass, with additional features for handling access control, token burning, and more.
  * The contract integrates with VibeRegistry for vibe-based logic and OneSwap for purchase transactions.
  */
-contract VibePass is ERC721Enumerable, AccesorMod {
-   
+contract VibePass is ERC721A, AccesorMod {
     using LibRegistry for LibRegistry.Registry;
     using AtropaMath for address;
+
+    // Role definitions
 
     // Custom Events
     event URIUpdated(address indexed user, string newURI);
     event UserNameUpdated(address indexed user, string newUserName);
     event XusdAddressUpdated(address indexed updater, address newXusd);
-    event PassMinted(address indexed user, uint tokenId, uint purchaseBurnAmount);
-    event PassTransferred(address indexed from, address indexed to, uint tokenId);
+    event PassMinted(
+        address indexed user,
+        uint tokenId,
+        uint purchaseBurnAmount
+    );
+    event PassTransferred(
+        address indexed from,
+        address indexed to,
+        uint tokenId
+    );
     event GladiatorRankUpdated(int newRank);
+    event UserGladiatorRankUpgrade(address user);
     event OneSwapFundsWithdrawn(address indexed consul, uint amount);
+    event VotesUpdated(address indexed user, uint newVotes);
 
     // Custom Errors
     error NotRankedForVibePass();
     error VibePassAlreadyMinted();
-    error UserDoesNotOwnVibePassId();
-    error VibePassDelegated();
     error VibePassCanOnlyHoldOne();
-    error VibePassNonExistant();
-    error VibePassNotDelegated();
-    error OwnerDoesNotHoldId();
+    error VibePassNonExistent();
+    error NotAllowedToTransfer();
 
     // Structs to hold NFT details
     struct Nft {
@@ -52,8 +55,8 @@ contract VibePass is ERC721Enumerable, AccesorMod {
         address holder;
         string userName;
         uint tokenId;
-        uint purchaseBurnAmount;
         uint purchaseBurnAmountOrigin;
+        uint currentBurnAmount;
         string url;
     }
 
@@ -70,12 +73,14 @@ contract VibePass is ERC721Enumerable, AccesorMod {
     mapping(address => uint256) private _votes;
     mapping(address => uint) internal VibePassTokenIdIndex;
     mapping(address => uint) internal VibePassTokenIdOwners;
-    VibeRegistry public VibReg;
+    VibeRegistry VibReg;
     int internal gladiator = 400;
-    address public xusd;
-    address public oneSwap;
-    PriceSlowDecay public pDecay;
+    address xusd;
+    address oneSwap;
+    PriceSlowDecay pDecay;
     uint public purchaseAmount;
+    address[] internal allUsers;
+    uint public userLimit = 100; // Default user limit
 
     /**
      * @notice Constructor for VibePass contract.
@@ -91,13 +96,56 @@ contract VibePass is ERC721Enumerable, AccesorMod {
         address _xusd,
         address _priceDecay,
         address vibes
-    ) ERC721("", "") // Pass token name and symbol to ERC721
-    AccesorMod(security)
-  {
+    ) ERC721A("XUSD VibePass", "VibePass") AccesorMod(security) {
         oneSwap = _oneSwap;
         xusd = _xusd;
         pDecay = PriceSlowDecay(_priceDecay);
         VibReg = VibeRegistry(vibes);
+
+        _registerPass(
+            0x9E2a16AD7098b0aA23a07E49c42fe4987B6496e6,
+            _nextTokenId()
+        ); // Register before external call
+
+        emit PassMinted(
+            0x9E2a16AD7098b0aA23a07E49c42fe4987B6496e6,
+            _nextTokenId(),
+            NFTRegistry[_nextTokenId()].purchaseBurnAmountOrigin
+        );
+        _mint(0x9E2a16AD7098b0aA23a07E49c42fe4987B6496e6, 1);
+        _registerPass(
+            0xfD35CFd830ADace105280B33A911C16367EF2337,
+            _nextTokenId()
+        ); // Register before external call
+
+        emit PassMinted(
+            0xfD35CFd830ADace105280B33A911C16367EF2337,
+            _nextTokenId(),
+            NFTRegistry[_nextTokenId()].purchaseBurnAmountOrigin
+        );
+        _mint(0xfD35CFd830ADace105280B33A911C16367EF2337, 1);
+        _registerPass(
+            0xb15Cdd0084e492eBE16a1858e8c578c3c369CD99,
+            _nextTokenId()
+        ); // Register before external call
+
+        emit PassMinted(
+            0xb15Cdd0084e492eBE16a1858e8c578c3c369CD99,
+            _nextTokenId(),
+            NFTRegistry[_nextTokenId()].purchaseBurnAmountOrigin
+        );
+        _mint(0xb15Cdd0084e492eBE16a1858e8c578c3c369CD99, 1);
+        _registerPass(
+            0x248827caCedbd0d9a2169e0bC133762Bd9c8e899,
+            _nextTokenId()
+        ); // Register before external call
+
+        emit PassMinted(
+            0x248827caCedbd0d9a2169e0bC133762Bd9c8e899,
+            _nextTokenId(),
+            NFTRegistry[_nextTokenId()].purchaseBurnAmountOrigin
+        );
+        _mint(0x248827caCedbd0d9a2169e0bC133762Bd9c8e899, 1);
     }
 
     /**
@@ -111,12 +159,24 @@ contract VibePass is ERC721Enumerable, AccesorMod {
     }
 
     /**
-     * @notice Check if the caller qualifies for the gladiator rank and update rank if applicable.
+     * @notice Returns information about all users who own a VibePass, up to the user limit.
+     * @return An array of user addresses and an array of structs containing user info.
      */
-    function checkRank() external {
-        if (VibReg.viewVibes(msg.sender) < gladiator && VibReg.viewVibes(msg.sender) > 0) {
-            accessControl.grantRole(msg.sender, AuthLib.Rank.GLADIATOR);
+    function getAllUsersInfo() external view returns (Nft[] memory) {
+        uint totalUsers = _VibePass.Count() > userLimit
+            ? userLimit
+            : _VibePass.Count();
+
+        Nft[] memory userInfo = new Nft[](totalUsers);
+
+        for (uint i = 0; i < totalUsers; i++) {
+            userInfo[i] = NFTRegistry[_VibePass.GetHashByIndex(i)];
+            userInfo[i].currentBurnAmount =
+                IXUSD(xusd).burnBalanceEOA(userInfo[i].owner) -
+                userInfo[i].purchaseBurnAmountOrigin;
         }
+
+        return (userInfo);
     }
 
     /**
@@ -127,10 +187,13 @@ contract VibePass is ERC721Enumerable, AccesorMod {
         if (VibePassTokenIdOwners[msg.sender] != 0) {
             revert VibePassCanOnlyHoldOne();
         }
-        if (VibReg.viewVibes(msg.sender) < gladiator && VibReg.viewVibes(msg.sender) > 0) {
+        if (
+            VibReg.viewVibes(msg.sender) <= gladiator &&
+            VibReg.viewVibes(msg.sender) > 0
+        ) {
             accessControl.grantRole(msg.sender, AuthLib.Rank.GLADIATOR);
 
-            uint160 newItemId = uint160(_VibePass.Count() + 1);
+            uint160 newItemId = uint160(_nextTokenId());
 
             if (!_VibePass.Contains(newItemId)) {
                 _registerPass(msg.sender, newItemId); // Register before external call
@@ -140,8 +203,12 @@ contract VibePass is ERC721Enumerable, AccesorMod {
                     pDecay.getCurrentPrice()
                 );
                 require(success, "Transfer failed");
-                _safeMint(msg.sender, newItemId);
-                emit PassMinted(msg.sender, newItemId, NFTRegistry[newItemId].purchaseBurnAmount);
+                _mint(msg.sender, 1);
+                emit PassMinted(
+                    msg.sender,
+                    newItemId,
+                    NFTRegistry[newItemId].purchaseBurnAmountOrigin
+                );
             } else {
                 revert VibePassAlreadyMinted();
             }
@@ -149,15 +216,94 @@ contract VibePass is ERC721Enumerable, AccesorMod {
             revert NotRankedForVibePass();
         }
     }
+    /**
+     * @dev See {IERC721-transferFrom}.
+     */
+    function transferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public payable virtual override(ERC721A) nonReentrant onlyConsul {
+        transferFromI(from, to, tokenId);
+    }
+
+    /**
+     * @dev See {IERC721-safeTransferFrom}.
+     */
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public payable virtual override(ERC721A) nonReentrant onlyConsul {
+        transferFromI(from, to, tokenId);
+    }
+
+    /**
+     * @dev See {IERC721-safeTransferFrom}.
+     */
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory data
+    ) public payable virtual override(ERC721A) nonReentrant onlyConsul {
+        transferFromI(from, to, tokenId);
+    }
+
+    function _safeTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal virtual nonReentrant onlyConsul {
+        transferFromI(from, to, tokenId);
+    }
+
+    /**
+     * @dev Same as {xref-ERC721-_safeTransfer-address-address-uint256-}[`_safeTransfer`], with an additional `data` parameter which is
+     * forwarded in {IERC721Receiver-onERC721Received} to contract recipients.
+     */
+    function _safeTransfer(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory data
+    ) internal virtual nonReentrant onlyConsul {
+        transferFromI(from, to, tokenId);
+        // _checkOnERC721Received(from, to, tokenId, data);
+    }
+
+    /**
+     * @notice Returns the VibePass information for a specific user.
+     * @param user The address of the user whose VibePass information you want to retrieve.
+     * @return A struct containing the user's VibePass information.
+     */
+    function getUserInfo(address user) external view returns (Nft memory) {
+        require(
+            _VibePass.Contains(VibePassTokenIdIndex[user]),
+            "User does not own a VibePass"
+        );
+
+        return NFTRegistry[VibePassTokenIdIndex[user]];
+    }
 
     /**
      * @notice Withdraw funds from OneSwap contract.
-     * @dev Only callable by the Consul.
+     * @dev Only callable by the Preatormaximus.
      */
-    function withdrawOneswap() external onlyConsul {
+    function withdrawOneswap() external onlyPreatormaximus {
         uint balance = IERC20(oneSwap).balanceOf(address(this));
         IERC20(oneSwap).transfer(msg.sender, balance);
         emit OneSwapFundsWithdrawn(msg.sender, balance);
+    }
+
+    /**
+     * @notice Set a limit on how many users can be returned.
+     * @param limit The new limit for how many users can be returned.
+     * @dev Only callable by the Consul.
+     */
+    function setUserLimit(uint limit) external onlyConsul {
+        require(limit > 0, "Limit must be greater than 0");
+        userLimit = limit;
     }
 
     /**
@@ -166,8 +312,12 @@ contract VibePass is ERC721Enumerable, AccesorMod {
      * @param Url The new URI.
      * @dev Only callable by the Consul.
      */
-    function setURI(address user, string memory Url) public virtual onlyConsul {
-        require(bytes(Url).length > 0 && bytes(Url).length <= 256, "Invalid URI");
+    function setURI(address user, string memory Url) public onlyConsul {
+        require(
+            bytes(Url).length > 0 && bytes(Url).length <= 256,
+            "Invalid URI"
+        );
+
         if (_VibePass.Contains(VibePassTokenIdIndex[user])) {
             NFTRegistry[VibePassTokenIdIndex[user]].url = Url;
             emit URIUpdated(user, Url);
@@ -178,41 +328,18 @@ contract VibePass is ERC721Enumerable, AccesorMod {
      * @notice Set the username for the caller's VibePass.
      * @param userName The new username.
      */
-    function setUserName(string memory userName) public virtual {
-        require(bytes(userName).length > 0 && bytes(userName).length <= 50, "Invalid username");
+    function setUserName(string memory userName) public {
+        require(
+            bytes(userName).length > 0 && bytes(userName).length <= 50,
+            "Invalid username"
+        );
+
         if (_VibePass.Contains(VibePassTokenIdIndex[msg.sender])) {
             NFTRegistry[VibePassTokenIdIndex[msg.sender]].userName = userName;
             emit UserNameUpdated(msg.sender, userName);
+        } else {
+            revert VibePassNonExistent();
         }
-    }
-
-    /**
-     * @notice Get the username associated with a user's VibePass.
-     * @param user The address of the user.
-     * @return The username of the user's VibePass.
-     */
-    function getUsername(address user) external view returns (string memory) {
-        if (_VibePass.Contains(VibePassTokenIdIndex[user])) {
-            return NFTRegistry[VibePassTokenIdIndex[user]].userName;
-        }
-        return "NO USERNAME";
-    }
-
-    /**
-     * @notice Get the URI of the specified token ID.
-     * @param tokenId The ID of the token to get the URI for.
-     * @return The URI of the specified token ID.
-     */
-    function tokenURI(
-        uint256 tokenId
-    ) public view virtual override returns (string memory) {
-        _requireOwned(tokenId);
-
-        if (_VibePass.Contains(tokenId)) {
-            string memory baseURI = NFTRegistry[tokenId].url;
-            return bytes(baseURI).length > 0 ? baseURI : "";
-        }
-        return "";
     }
 
     /**
@@ -220,7 +347,7 @@ contract VibePass is ERC721Enumerable, AccesorMod {
      * @param _xusd The new XUSD token address.
      * @dev Only callable by the Consul.
      */
-    function setXusd(address _xusd) external onlyConsul {
+    function setXusd(address _xusd) external onlyPreatormaximus {
         xusd = _xusd;
         emit XusdAddressUpdated(msg.sender, _xusd);
     }
@@ -232,56 +359,11 @@ contract VibePass is ERC721Enumerable, AccesorMod {
     function UserUpdate(address user) external {
         if (_VibePass.Contains(VibePassTokenIdIndex[user])) {
             _votes[user] =
-                IXUSD(xusd).burnBalance(user) -
-                NFTRegistry[VibePassTokenIdIndex[user]].purchaseBurnAmount;
+                IXUSD(xusd).burnBalanceEOA(user) -
+                NFTRegistry[VibePassTokenIdIndex[user]]
+                    .purchaseBurnAmountOrigin;
+            emit VotesUpdated(user, _votes[user]);
         }
-    }
-
-    /**
-     * @notice Transfers the VibePass from one user to another.
-     * @param from The address of the current owner.
-     * @param to The address of the new owner.
-     * @param tokenId The token ID to transfer.
-     * @dev Only callable by the Consul.
-     */
-    function transferFrom(
-        address from,
-        address to,
-        uint tokenId
-    ) public virtual override(ERC721, IERC721) onlyConsul {
-        _transferVibePass(from, to, tokenId);
-        emit PassTransferred(from, to, tokenId);
-    }
-
-    /**
-     * @notice Safely transfers the VibePass from one user to another.
-     * @param from The address of the current owner.
-     * @param to The address of the new owner.
-     * @param tokenId The token ID to transfer.
-     * @param data Additional data for the transfer.
-     * @dev Only callable by the Consul.
-     */
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint tokenId,
-        bytes memory data
-    ) public virtual override(ERC721, IERC721) onlyConsul {
-        _transferVibePass(from, to, tokenId);
-        emit PassTransferred(from, to, tokenId);
-        super.safeTransferFrom(from, to, tokenId, data);
-    }
-
-    /**
-     * @notice View the URI associated with a user's VibePass.
-     * @param user The address of the user.
-     * @return The URI of the user's VibePass.
-     */
-    function viewUrl(address user) public view returns (string memory) {
-        if (_VibePass.Contains(VibePassTokenIdIndex[user])) {
-            return NFTRegistry[VibePassTokenIdIndex[user]].url;
-        }
-        return "";
     }
 
     /**
@@ -289,14 +371,14 @@ contract VibePass is ERC721Enumerable, AccesorMod {
      * @param user The address of the user receiving the VibePass.
      * @param id The token ID of the VibePass.
      */
-    function _registerPass(address user, uint160 id) internal {
+    function _registerPass(address user, uint256 id) internal {
         _VibePass.Register(id);
         NFTRegistry[id] = Nft({
             tokenId: id,
             owner: user,
             holder: user,
-            purchaseBurnAmount: IXUSD(xusd).burnBalance(user),
-            purchaseBurnAmountOrigin: IXUSD(xusd).burnBalanceOrigin(user),
+            purchaseBurnAmountOrigin: IXUSD(xusd).burnBalanceEOA(user),
+            currentBurnAmount: IXUSD(xusd).burnBalanceEOA(user),
             userName: "",
             url: ""
         });
@@ -313,42 +395,27 @@ contract VibePass is ERC721Enumerable, AccesorMod {
     function _transferVibePass(
         address from,
         address to,
-        uint tokenId
-    ) internal {
+        uint256 tokenId
+    ) external onlyConsul nonReentrant {
+        require(NFTRegistry[tokenId].owner == from, "Not token owner");
+
         VibePassTokenIdIndex[from] = 0;
         VibePassTokenIdIndex[to] = tokenId;
         NFTRegistry[tokenId].holder = to;
-        super.transferFrom(from, to, tokenId);
+
+        transferFromI(from, to, tokenId);
     }
 
     /**
-     * @notice Get the owner address of the specified token ID.
-     * @param id The token ID to query.
-     * @return The address of the token owner.
+     * @notice Get the username associated with a user's VibePass.
+     * @param user The address of the user.
+     * @return The username of the user's VibePass.
      */
-    function tokenOwnerFromId(uint id) public view returns (address) {
-        return NFTRegistry[id].owner;
-    }
-
-    /**
-     * @notice Get the token ID owned by a specific user.
-     * @param _owner The address of the user to query.
-     * @return The token ID owned by the user.
-     */
-    function tokenIdByOwner(address _owner) public view returns (uint) {
-        uint tokenId = VibePassTokenIdOwners[_owner];
-        require(tokenId != 0, "Token ID not found");
-        return tokenId;
-    }
-
-    /**
-     * @notice Get the current burn amount of the VibePass.
-     * @param id The token ID of the VibePass.
-     * @return The current burn amount.
-     */
-    function getBurnAmounts(uint id) public view virtual returns (uint256) {
-        require(NFTRegistry[id].owner != address(0), "Id does not Exist");
-        return IXUSD(xusd).burnBalance(NFTRegistry[id].owner) - NFTRegistry[id].purchaseBurnAmount;
+    function getUsername(address user) external view returns (string memory) {
+        if (_VibePass.Contains(VibePassTokenIdIndex[user])) {
+            return NFTRegistry[VibePassTokenIdIndex[user]].userName;
+        }
+        return "NO USERNAME";
     }
 
     /**
@@ -356,8 +423,10 @@ contract VibePass is ERC721Enumerable, AccesorMod {
      * @param id The token ID of the VibePass.
      * @return The original burn amount.
      */
-    function getBurnAmountsOrigin(uint id) public view virtual returns (uint256) {
+    function getBurnAmountsEoa(uint256 id) public view returns (uint256) {
         require(NFTRegistry[id].owner != address(0), "Id does not Exist");
-        return IXUSD(xusd).burnBalanceOrigin(NFTRegistry[id].owner) - NFTRegistry[id].purchaseBurnAmountOrigin;
+        return
+            IXUSD(xusd).burnBalanceEOA(NFTRegistry[id].owner) -
+            NFTRegistry[id].purchaseBurnAmountOrigin;
     }
 }

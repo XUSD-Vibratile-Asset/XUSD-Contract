@@ -382,6 +382,23 @@ function owner() external view returns (address)
 |---|---|---|
 | _0 | address | undefined |
 
+### registry
+
+```solidity
+function registry() external view returns (contract VibeRegistry)
+```
+
+
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | contract VibeRegistry | undefined |
+
 ### renounceOwnership
 
 ```solidity
@@ -425,6 +442,39 @@ function setRegistry(address reg) external nonpayable
 | Name | Type | Description |
 |---|---|---|
 | reg | address | undefined |
+
+### setTaxVariable
+
+```solidity
+function setTaxVariable(uint256 treasury, uint256 burn) external nonpayable
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| treasury | uint256 | undefined |
+| burn | uint256 | undefined |
+
+### setTreasury
+
+```solidity
+function setTreasury(address t) external nonpayable
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| t | address | undefined |
 
 ### symbol
 

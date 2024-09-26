@@ -923,7 +923,7 @@
 				"dweb:/ipfs/QmX24gsrsCoHmQW9kCfuspMVqBk1N8ASdTHY9vUQg8UgRv"
 			]
 		},
-		"contracts/XUSD1.sol": {
+		"contracts/xusd.sol": {
 			"keccak256": "0x006f6995ffacfcb5709b6c91ee926ea08782848309da1c2a71392284efdadb22",
 			"license": "MIT",
 			"urls": [
