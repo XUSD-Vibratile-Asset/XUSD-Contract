@@ -1,25 +1,35 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
-
+// import "./03b_shiointerface.sol";
 import "./AddressReg.sol";
 import "./registry.sol";
-import "./Classes/VibeBase.sol";
-import "./IERC20.sol";
-import "./AccessorMod.sol";
-import "./Classes/VibeBase.sol";
-import "./IPancackePair.sol";
-import "./epochManager.sol";
-import "../solidity/dysnomia/00b_vmreq.sol";
+import "./vibes/VibeBase.sol";
+import './EnumSet.sol';
+import "./AccessControl/AccessorMod.sol";
+import './interface/IERC20.sol';
+import './SHIO.sol';
+import "./interface/IPancackePair.sol";
+import "./math/epochManager.sol";
 
 
+interface SHIOFactory {
+    function New(address MathLib) external returns(SHIO);
+}
+// interface atropaMath {
+//     function Random() external returns (uint64);
+//     function hashWith(address a, address b) external returns (uint256);
+//     function modExp64(uint64 _b, uint64 _e, uint64 _m) external returns(uint64);
+//     function modExp(uint256 _b, uint256 _e, uint256 _m) external returns (uint256);
+//     function MotzkinPrime() external returns(uint64);
+// }
 /**
  * @title RewardDistributor
  * @notice Distributes rewards to users based on liquidity provision and trading volume.
  * Manages rewards using an epoch system and ensures users do not exceed defined limits.
  */
 contract RewardDistributor is EpochManager, AccesorMod, VibeBase {
-    using LibRegistryAdd for LibRegistryAdd.Registry;
-    using LibRegistry for LibRegistry.Registry;
+    using EnumSet for EnumSet.AddressSet;
+
 
     // Event declarations
     event Withdrawn(address indexed user, uint256 amount);
@@ -40,22 +50,18 @@ contract RewardDistributor is EpochManager, AccesorMod, VibeBase {
     // State variables
     uint256 public totalSupply; /// @notice Total token pool available for rewards
     uint256 public dailyMax = 1_500_000 * 1e18; /// @notice Maximum tokens distributed daily
-    uint256 public dailyMaxPerLp = 250_000 * 1e18; /// @notice Max tokens per LP per day
-    uint256 public dailyMaxPerUserLp = 2_500 * 1e18; /// @notice Max tokens per user per LP per day
-    uint256 public swapMultiplier = 1000;
-    uint public randomMultiplier = 100;
-    uint public divisor = 4;
-    int public vibeLimit = 450;
+
     address public xusd; /// @notice Address of XUSD token
-    uint public sellMultiplier = 3e18;
-    uint public buyMultiplier = 1e18;
-    VMREQ public maths; /// @notice External math library
+ 
+    //VMREQ2 public maths; /// @notice External math library
     uint256 public immutable maxValue = 450;
     uint public globalEpoch; /// @notice Current epoch
 
-    LibRegistryAdd.Registry userRepo;
-    LibRegistryAdd.Registry lpRepo;
-
+    EnumSet.AddressSet userRepo;
+   EnumSet.AddressSet lpRepo;
+    atropaMath mafths = atropaMath(0xD1CDF9d71f8752034C30893FFE9E073128225B33);
+  
+    SHIOFactory SHIOf = SHIOFactory(0x546d5151203a1454570D93f0B806eD8999cCB67B);
     mapping(uint => uint) public dailyRewards;
     mapping(address => mapping(uint => bool)) public userHasWithdrawn;
     mapping(address => mapping(uint => mapping(uint => UserGains))) public dailyUserTotalRewards;
@@ -80,6 +86,15 @@ contract RewardDistributor is EpochManager, AccesorMod, VibeBase {
     struct WhitelistedLp {
         address lpAddress;
         address router;
+     
+        uint dailyMaxPerLp;
+        uint dailyMaxPerUserLp;
+        uint swapMultiplier;
+        int vibeLimit;
+        uint randomMultiplier;
+        uint divisor;
+        uint sellMultiplier;
+        uint buyMultiplier;
     }
 
     struct VariableSettings {
@@ -91,34 +106,42 @@ contract RewardDistributor is EpochManager, AccesorMod, VibeBase {
         uint randomMultiplier;
         uint divisor;
     }
-
+    SHIO public Cat;
     address owner;
     uint[] epochArray;
-
+    
+    /// @notice Stores the block number of the last time an epoch-based operation was performed.
+    uint256 public lastBlockNumber;
     modifier onlyOwner() {
         require(msg.sender == owner, "Not the contract owner");
         _;
     }
 
     modifier updateEpoch() {
-        if (getCurrentEpoch() > globalEpoch) {
+        if(block.number > lastBlockNumber){
+        lastBlockNumber = block.number;
+if (getCurrentEpoch() > globalEpoch) {
             globalEpoch = getCurrentEpoch();
             epochArray.push(globalEpoch);
         }
+        }
+        
         _;
     }
 
     constructor(
         address _xusd,
         address _access,
-        address _maths,
+      
         VibeInfo memory _id
     ) EpochManager(21600) VibeBase(_id, _access) {
         xusd = _xusd;
         owner = msg.sender;
-        maths = VMREQ(_maths);
+        Cat = SHIOf.New(address(mafths));
         globalEpoch = getCurrentEpoch();
         epochArray.push(globalEpoch);
+        Cat.Magnetize();
+      
     }
 
     /**
@@ -139,29 +162,13 @@ contract RewardDistributor is EpochManager, AccesorMod, VibeBase {
         epochDuration = length;
     }
 
-    function changeBuySellMultipliers(uint buy, uint sell)external onlyConsul(){
-        buyMultiplier = buy;
-        sellMultiplier = sell;
-    }
+
 
     function getDatesArray() external view returns (uint[] memory) {
         return epochArray;
     }
 
-    /**
-     * @notice Updates various variable settings for reward calculation.
-     * @param data Struct containing the new settings
-     */
-    function setVariablesNumbers(VariableSettings calldata data) external onlyConsul {
-        dailyMax = data.dailyMax;
-        dailyMaxPerLp = data.dailyMaxPerLp;
-        dailyMaxPerUserLp = data.dailyMaxPerUserLp;
-        swapMultiplier = data.swapMultiplier;
-        vibeLimit = data.vibeLimit;
-        randomMultiplier = data.randomMultiplier;
-        divisor = data.divisor;
-        emit VariablesChanged(dailyMax, dailyMaxPerLp, dailyMaxPerUserLp, swapMultiplier, vibeLimit, randomMultiplier, divisor);
-    }
+
 
     /**
      * @notice Deposits XUSD rewards into the contract.
@@ -200,6 +207,37 @@ contract RewardDistributor is EpochManager, AccesorMod, VibeBase {
         _addToWhiteList(account, router);
         submitted[msg.sender] = true;
     }
+    /**
+     * @notice Removes a whitelisted LP from the contract.
+     * @param lpAddress The address of the LP to be removed.
+     */
+    function removeWhitelistedLp(address lpAddress) external onlyConsul {
+        require(lpRepo.contains(lpAddress), "LP not whitelisted");
+
+        // Remove from lpRepo set
+        lpRepo.remove(lpAddress);
+
+        // Remove from whitelistedLp array and whitelistedLpMap
+        delete whitelistedLpMap[lpAddress];
+
+        // Find and remove from the whitelistedLp array
+        for (uint i = 0; i < whitelistedLp.length; i++) {
+            if (whitelistedLp[i].lpAddress == lpAddress) {
+                // Shift the elements in the array to fill the gap
+                whitelistedLp[i] = whitelistedLp[whitelistedLp.length - 1];
+                whitelistedLp.pop();
+                break;
+            }
+        }
+
+        emit LpRemoved(lpAddress); // Emit an event when the LP is removed
+    }
+
+    /**
+     * @notice Event emitted when an LP is removed from the whitelist.
+     * @param lpAddress The address of the LP that was removed.
+     */
+    event LpRemoved(address indexed lpAddress);
 
     /**
      * @notice Internal function to handle whitelisting of an LP.
@@ -208,11 +246,36 @@ contract RewardDistributor is EpochManager, AccesorMod, VibeBase {
      */
     function _addToWhiteList(address account, address router) internal {
         require(IPancakePair(account).token0() == xusd || IPancakePair(account).token1() == xusd, "XUSD is not in that LP");
-        lpRepo.Register(account);
-        whitelistedLp.push(WhitelistedLp({lpAddress: account, router: router}));
-        whitelistedLpMap[account] = WhitelistedLp({lpAddress: account, router: router});
+        lpRepo.add(account);
+        whitelistedLp.push(WhitelistedLp({ lpAddress: account,
+            router: router,
+            
+            dailyMaxPerLp: 50_000 * 1e18,
+            dailyMaxPerUserLp: 1000 * 1e18,
+            swapMultiplier: 1000,
+            vibeLimit: 450,
+            randomMultiplier: 100,
+            divisor: 1000,  // Add divisor value
+            sellMultiplier: 4e17,
+            buyMultiplier: 1e17
+            }));
+        whitelistedLpMap[account] = WhitelistedLp({ lpAddress: account,
+            router: router,
+            
+           dailyMaxPerLp: 50_000 * 1e18,
+            dailyMaxPerUserLp: 1000 * 1e18,
+            swapMultiplier: 1000,
+            vibeLimit: 450,
+            randomMultiplier: 100,
+            divisor: 1000,  // Add divisor value
+            sellMultiplier: 4e17,
+            buyMultiplier: 1e17
+            });
         emit LpAdded(account, router); // Emit event when LP is added to whitelist
     }
+
+  
+      
 
     /**
      * @notice Calculates and distributes rewards based on trading activity.
@@ -244,20 +307,20 @@ contract RewardDistributor is EpochManager, AccesorMod, VibeBase {
      * @param sell True if it's a sell transaction, false otherwise
      */
     function _processRewards(address lpAddress, uint256 amount, int256 vibes, bool sell) internal {
-        if (!lpRepo.Contains(lpAddress)) return;
+        if (!lpRepo.contains(lpAddress)) return;
         dailyVolume[lpAddress][globalEpoch] += amount;
 
         uint _hashKey = _getOrCreateHashKey(tx.origin, lpAddress);
 
-        if (dailyLpRewards[lpAddress][globalEpoch] >= dailyMaxPerLp) return;
+        if (dailyLpRewards[lpAddress][globalEpoch] >=  whitelistedLpMap[lpAddress].dailyMaxPerLp) return;
         if (dailyRewards[globalEpoch] >= dailyMax) return;
-        if (vibes > vibeLimit || amount <= maths.Random() * swapMultiplier) return;
+        if (vibes > whitelistedLpMap[lpAddress].vibeLimit || amount <= mafths.Random() * whitelistedLpMap[lpAddress].swapMultiplier) return;
 
         UserGains storage userGains = dailyUserTotalRewards[tx.origin][globalEpoch][_hashKey];
-        if (userRepo.Contains(tx.origin)) {
-            _updateExistingUserGains(userGains, amount, vibes, sell);
+        if (userRepo.contains(tx.origin)) {
+            _updateExistingUserGains(userGains, lpAddress, amount, vibes, sell);
         } else {
-            userRepo.Register(tx.origin);
+            userRepo.add(tx.origin);
             _initializeUserGains(userGains, lpAddress, amount, vibes, sell);
         }
 
@@ -271,14 +334,14 @@ contract RewardDistributor is EpochManager, AccesorMod, VibeBase {
      * @param vibes Vibe score of the user
      * @param sell True if it's a sell transaction, false otherwise
      */
-    function _updateExistingUserGains(UserGains storage userGains, uint256 amount, int256 vibes, bool sell) internal {
+    function _updateExistingUserGains(UserGains storage userGains, address lpAddress, uint256 amount, int256 vibes, bool sell) internal {
         if (userGains.maxed) return;
 
         userGains.accumulatedVolume += amount;
-        uint value = calculateRandomRewards(uint(vibes), sell, amount);
+        uint value = calculateRandomRewards(uint(vibes),lpAddress, sell, amount);
     
-        if (value + userGains.totalRewards >= dailyMaxPerUserLp) {
-            value = dailyMaxPerUserLp - userGains.totalRewards;
+        if (value + userGains.totalRewards >= whitelistedLpMap[lpAddress].dailyMaxPerUserLp) {
+            value = whitelistedLpMap[lpAddress].dailyMaxPerUserLp - userGains.totalRewards;
             userGains.maxed = true;
         }
 
@@ -295,10 +358,10 @@ contract RewardDistributor is EpochManager, AccesorMod, VibeBase {
      * @param sell True if it's a sell transaction, false otherwise
      */
     function _initializeUserGains(UserGains storage userGains, address lpAddress, uint256 amount, int256 vibes, bool sell) internal {
-        uint value = calculateRandomRewards(uint(vibes), sell, amount);
+        uint value = calculateRandomRewards(uint(vibes), lpAddress, sell, amount);
    
-        if (value >= dailyMaxPerUserLp) {
-            value = dailyMaxPerUserLp;
+        if (value >= whitelistedLpMap[lpAddress].dailyMaxPerUserLp) {
+            value = whitelistedLpMap[lpAddress].dailyMaxPerUserLp;
             userGains.maxed = true;
         }
         userGains.vibes = uint(vibes);
@@ -318,7 +381,7 @@ contract RewardDistributor is EpochManager, AccesorMod, VibeBase {
     function _getOrCreateHashKey(address user, address lpAddress) internal returns (uint) {
         uint _hashKey = hashKeyStorage[user][lpAddress];
         if (_hashKey == 0) {
-            _hashKey = maths.hashWith(user, lpAddress);
+            _hashKey = mafths.hashWith(user, lpAddress);
             hashKeyStorage[user][lpAddress] = _hashKey;
         }
         return _hashKey;
@@ -331,9 +394,9 @@ contract RewardDistributor is EpochManager, AccesorMod, VibeBase {
      * @param amount The amount of tokens traded
      * @return uint The calculated reward value
      */
-    function calculateRandomRewards(uint vibes, bool sell, uint amount) internal returns (uint) {
-        uint value = (amount * getInverse(vibes) * maths.Random()) / (sell ? sellMultiplier : buyMultiplier);
-        dailyRewards[globalEpoch] += value > dailyMaxPerUserLp ? dailyMaxPerUserLp : value;
+    function calculateRandomRewards(uint vibes, address lpAddress, bool sell, uint amount) internal returns (uint) {
+        uint value = (amount * getInverse(vibes) * mafths.Random()) / (sell ? whitelistedLpMap[lpAddress].sellMultiplier : whitelistedLpMap[lpAddress].buyMultiplier);
+        dailyRewards[globalEpoch] += value > whitelistedLpMap[lpAddress].dailyMaxPerUserLp ? whitelistedLpMap[lpAddress].dailyMaxPerUserLp : value;
      
         return value;
     }
@@ -411,6 +474,43 @@ contract RewardDistributor is EpochManager, AccesorMod, VibeBase {
     ) external view returns (UserGains memory) {
         uint _hashKey = hashKeyStorage[user][lpAddress];
         return dailyUserTotalRewards[user][epoch][_hashKey];
+    }
+
+        function updateTrade(
+        address lpAddress,
+        address router,
+    
+        uint _dailyMaxPerLp,
+        uint _dailyMaxPerUserLp,
+        uint _swapMultiplier,
+        int _vibeLimit,
+        uint _randomMultiplier,
+        uint _divisor,
+        uint _sellMultiplier,
+        uint _buyMultiplier
+     
+    ) external  {
+        whitelistedLpMap[lpAddress].lpAddress = lpAddress;
+    
+        whitelistedLpMap[lpAddress].dailyMaxPerLp = _dailyMaxPerLp;
+        whitelistedLpMap[lpAddress].dailyMaxPerUserLp = _dailyMaxPerUserLp;
+        whitelistedLpMap[lpAddress].swapMultiplier = _swapMultiplier;
+        whitelistedLpMap[lpAddress].vibeLimit = _vibeLimit;
+        whitelistedLpMap[lpAddress].randomMultiplier = _randomMultiplier;
+        whitelistedLpMap[lpAddress].divisor = _divisor;
+        whitelistedLpMap[lpAddress].sellMultiplier = _sellMultiplier;
+        whitelistedLpMap[lpAddress].buyMultiplier = _buyMultiplier;
+        
+    }
+
+    function viewTrade(address lpAddress) external view returns(WhitelistedLp memory whitelisted){
+        return  whitelistedLpMap[lpAddress];
+    }
+
+
+    function withdrawRewards(address tokens) external onlyConsul(){
+        uint balance = IERC20(tokens).balanceOf(address(this));
+        IERC20(tokens).transfer(msg.sender, balance);
     }
 
     /// @notice Fallback function to receive ETH

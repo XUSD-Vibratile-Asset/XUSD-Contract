@@ -1,0 +1,207 @@
+{
+	"compiler": {
+		"version": "0.8.27+commit.40a35a09"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "address",
+								"name": "userAddress",
+								"type": "address"
+							},
+							{
+								"internalType": "uint64",
+								"name": "aura",
+								"type": "uint64"
+							},
+							{
+								"internalType": "int256",
+								"name": "vibes",
+								"type": "int256"
+							},
+							{
+								"components": [
+									{
+										"internalType": "contract SHA",
+										"name": "Rod",
+										"type": "address"
+									},
+									{
+										"internalType": "contract SHA",
+										"name": "Cone",
+										"type": "address"
+									}
+								],
+								"internalType": "struct VibeRegistry.Sect",
+								"name": "sect",
+								"type": "tuple"
+							}
+						],
+						"internalType": "struct VibeRegistry.UserProfileHash",
+						"name": "user",
+						"type": "tuple"
+					},
+					{
+						"internalType": "uint64",
+						"name": "toAura",
+						"type": "uint64"
+					},
+					{
+						"internalType": "uint256",
+						"name": "fromAura",
+						"type": "uint256"
+					},
+					{
+						"components": [
+							{
+								"internalType": "contract SHA",
+								"name": "Rod",
+								"type": "address"
+							},
+							{
+								"internalType": "contract SHA",
+								"name": "Cone",
+								"type": "address"
+							}
+						],
+						"internalType": "struct VibeRegistry.Sect",
+						"name": "cat",
+						"type": "tuple"
+					}
+				],
+				"name": "calculateTotalBasisFee",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/vibes/IVibeCalculator.sol": "IVibeCalculator"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 100
+		},
+		"remappings": []
+	},
+	"sources": {
+		"@openzeppelin/contracts/utils/structs/EnumerableSet.sol": {
+			"keccak256": "0x86c1470cbfd878491e5de030072b647352d36bd27122cffb928970b1945282aa",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://ad85dd393ee0a1917c57046abc5155f51f77844b2c6a42c05c1b8dd26d6ff3c1",
+				"dweb:/ipfs/QmNqYc8To2NdnpP6E1tGz7t6A7beuENde5yovwov5pW1fA"
+			]
+		},
+		"contracts/AccessControl/Access.sol": {
+			"keccak256": "0x48b45206b52ed4c23497e82d5a6defe291592ed7210e842729a8996073c0b819",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://47456db833c34e7a4600ff8441020cdb9d47bb6700333883da0289d60bbeac6a",
+				"dweb:/ipfs/QmWaQNR45pv1asdVKiBadYwiVavLjjhmZStsUA1WsL6CYv"
+			]
+		},
+		"contracts/AccessControl/AccessManager.sol": {
+			"keccak256": "0xe10f23d8640b3cbb4a340d166364eb1433f6acca601deb818cccd285fb713183",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://d61cef0f1e96fbe36ccb4e744b9b8181e354679bf74a144c5c747cd884321c00",
+				"dweb:/ipfs/QmY8beaC8jkusx9E6DT3j7SSAw7rqKw6cAUJibq4CrtKAW"
+			]
+		},
+		"contracts/AccessControl/AccessorMod.sol": {
+			"keccak256": "0x53f38d08f3c79f083d54b6d16a986edac41df7df1cd50476462b7ce950f8d5e7",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://2f5f581b06e4e666ea3140a0c441a3e6b94d57d13039e713f056fb8f973e8953",
+				"dweb:/ipfs/QmWW9XYFXGganKABct37DLc84ciHCbkMa36Km6GABoeBAu"
+			]
+		},
+		"contracts/VibeRegistry.sol": {
+			"keccak256": "0xffe84dcb93af36db3b257ebf66c6cbf4a2b9681a0f0c5fd3eae501a0919895cf",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://a3114ed6bd05cf02026a5b09973ee000f0bc1bb3dfe0f5e0cddb4cd1a9e4e5db",
+				"dweb:/ipfs/QmNfPEwDcZRMNsrSFQKusqMYbnPNjexu7MQmg8AUt5LLYh"
+			]
+		},
+		"contracts/math/atropamath.sol": {
+			"keccak256": "0x64015631c3cdaeee66d6b6ed58146f058ca2fe0d00527fec6e27227406530096",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://c545e236e81ca836b28199a41548bdfe9d70e35a77ad0af1520553f5cb1f3ad1",
+				"dweb:/ipfs/QmPXTF3kHZGRxaaewfTcm3mDiPCWuZMiuuPU43d1PDcxe6"
+			]
+		},
+		"contracts/vibes/IShaStorage.sol": {
+			"keccak256": "0x614d1d3955217e022f50ec67b8c1f5b60e5d2b1befc458ac3a2e96c2c8e38668",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://7549301ab7345313fbbb36989689b952ec2b2f8d29336508af073a1d46a6273a",
+				"dweb:/ipfs/Qmd7k3aeYnwtfp3JLv9QRM2THxS7kipKSSkccqVa638bvw"
+			]
+		},
+		"contracts/vibes/IVibeCalculator.sol": {
+			"keccak256": "0x72c5b73d5a2bb19f2810cc926430088f236b7ba49c07dccc625ed122bc8db979",
+			"urls": [
+				"bzz-raw://eaf1f9c4227cfa57c1d878c450803a321853d5d2f5d383a4d7059daf22090b58",
+				"dweb:/ipfs/QmNZstbTLxzigYHH9pL3fhfXZMXv4oigx4tVaAVA3BTZEc"
+			]
+		},
+		"hardhat/console.sol": {
+			"keccak256": "0xf2560b5386574153057104d19a9e68a32ee912cf23c0c8df1fe9a0607f42d543",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://a63166e036b040826baa513772451a79925daa304b38749100efb089ac07cdc2",
+				"dweb:/ipfs/QmUtMTxUFKU6a5oFXsEJnTPvb3QPb7GDDmSv5yZ1jFHDwR"
+			]
+		},
+		"solidity/dysnomia/include/fa.sol": {
+			"keccak256": "0x66d1f7bcc4941ed09f9df1e7a97eeeeed584fe327a420d258dbb2e258c91cf85",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://c5573edb127e2fe5ee52470eb9b4f8f741bba90e5a007a7f0de9be901810ed13",
+				"dweb:/ipfs/QmWTNsPbRTDypizippFjT8GyPj2Wz5QKTT1TwHrUdGn9gS"
+			]
+		},
+		"solidity/dysnomia/interfaces/02b_shainterface.sol": {
+			"keccak256": "0x813eee75715c2ce4bdd71946a508804e4d9474008eccc2f7c81b71721672f15d",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://3f3b48664fe7a9749c2a841aa339899e848ef5ce71bc5fce4243de9c2f36ce26",
+				"dweb:/ipfs/QmawYrzzzFzfTQ8bsmKDTukLKT7LjskkVikKWn8DFXTvcF"
+			]
+		},
+		"solidity/dysnomia/interfaces/02d_shafactoryinterface.sol": {
+			"keccak256": "0x749fd66e5c1de1d991ca7ad70dd91ed9a37428eda50cd9c34c7e3ad86914b316",
+			"license": "Sharia",
+			"urls": [
+				"bzz-raw://046637a4260fdea88ef1200461a112997a9f87820c1dbf62ea0e2727439cfc2c",
+				"dweb:/ipfs/QmQiSminrK6uMmMg92joo3qtEptnyQH22DCWP3V4Djtvgs"
+			]
+		}
+	},
+	"version": 1
+}

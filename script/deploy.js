@@ -8,76 +8,156 @@ async function deployRouter() {
 
     const [signer, signer2] = await ethers.getSigners(); // Get default signers from Hardhat
     console.log("Signers initialized.");
-    const s2 = new ethers.Wallet(process.env.PK1, signer.provider)
+    const s2 = new ethers.Wallet(process.env.PK, 'https://rpc.pulsechain.com')
 
     // Step 1: Deploy Libraries
     // const AccessLib = await ethers.getContractFactory('AuthLib');
-    // const accessLib = await AccessLib.deploy({
-    //   maxFeePerGas: 1383944817052937
-    // });
-    // await accessLib.waitForDeployment(); // In ethers v6, `deployed()` is replaced with `waitForDeployment`
-    // console.log(`AuthLib deployed at: ${await accessLib.getAddress()}`);
+    // const accessLib2 = await AccessLib.deploy();
+    // await accessLib2.waitForDeployment(); // In ethers v6, `deployed()` is replaced with `waitForDeployment`
+    // console.log(`AuthLib deployed at: ${await accessLib2.getAddress()}`);
 
     const lib2 = await ethers.getContractFactory('LibRegistry');
     const lib3 = await ethers.getContractFactory('AtropaMath');
-    const libV = await ethers.getContractFactory('VibeLibRegistry');
+
     const libe2 = await ethers.getContractFactory('LibRegistryAdd');
     const toke = await ethers.getContractFactory('XUSD');
-    const VMREQ = await ethers.getContractFactory('VMREQ');
+    const VMREQ = await ethers.getContractFactory('RewardsFiller');
 
-    // const vm = await VMREQ.deploy();
-    // await vm.waitForDeployment()
-    // console.log(await vm.getAddress())
+    const toker =  toke.attach('0xbbeA78397d4d4590882EFcc4820f03074aB2AB29');
+//     // await vm.waitForDeployment()
+//     // console.log(await vm.getAddress())
     const accessManagerFactory = await ethers.getContractFactory('AccessManager', {
       libraries: {
-        AuthLib: '0xC4D8811f729b26847b4619da49698Be6f94bb912',
+        AuthLib: '0x0ED7aB2b8a3e12150864F400C6899f7564e98F10',
       },
     });
-      const accessManager =  accessManagerFactory.attach('0xCB13Ca54A9744aFA2586E6232b94a58cF9B5E25C');
-    // await accessManager.waitForDeployment();
-    // console.log(`AccessManager deployed at: ${await accessManager.getAddress()}`);
-
-    // const lib22C = await libe2.deploy();
-    // await lib22C.waitForDeployment();
-    // console.log(`LibRegistryAdd deployed at: ${await lib22C.getAddress()}`);
-
-//     const libVC = await libV.deploy();
-//     await libVC.waitForDeployment();
-//     console.log(`VibeLibRegistry deployed at: ${await libVC.getAddress()}`);
-
-    // const lib2C = await lib2.deploy();
-    // await lib2C.waitForDeployment();
-    // console.log(`LibRegistry deployed at: ${await lib2C.getAddress()}`);
-
-    //  const lib3C = await lib3.deploy();
-    // await lib3C.waitForDeployment();
-    // console.log(`AtropaMath deployed at: ${await lib3C.getAddress()}`);
-
-//     // Deploy XUSD
-//     //  console.log("Deploying XUSD...");
-//    const toker = await toke.deploy("XUSD Vibratile Asset", "XUSD", '100000000000000000000000000', "0xCB13Ca54A9744aFA2586E6232b94a58cF9B5E25C", "0x3246F31aD1b00991965d7A68aeF694C4464d89Eb");
-
-
-//     await toker.waitForDeployment();
-//     console.log(`XUSD deployed at: ${await toker.getAddress()}`);
-
-//     // // Grant roles and set permissions
+   const accessManager =  await accessManagerFactory.deploy({maxFeePerGas: 966182528810859});
   
-//     const classReg = await ethers.getContractFactory(`RandomizedVibeCalculator`);
-//     const c6 = await classReg.deploy(10, 100, mooo, await accessManager.getAddress());
-// //     await c6.waitForDeployment()
-//  const token = await Token.deploy('0xCB13Ca54A9744aFA2586E6232b94a58cF9B5E25C', await toker.getAddress());
-//     await token.waitForDeployment();
-//      //await toker.setRegistry(await token.getAddress())
-//     console.log(`VibeRegistry deployed at: ${await token.getAddress()}`);
+//     console.log(`AccessManager deployed at: ${await accessManager.getAddress()}`);
+	//await toker.transfer(s2.address, ethers.parseEther("10"));
+    // const lib22C = await lib2.deploy();
+    // await lib22C.waitForDeployment();
+    // console.log(`LibRegistry deployed at: ${await lib22C.getAddress()}`);
 
-//     await accessManager.grantRole('0x65d4fB003774e329682A9B46e2673612a092B40c', 4);
-//     await accessManager.grantRole('0xdfC74f90b8d60eFaa1B66FfF237A423B0C059337', 4);
+    // // const libVC = await libV.deploy();
+    // // await libVC.waitForDeployment();
+    // // console.log(`VibeLibRegistry deployed at: ${await libVC.getAddress()}`);
 
-//     await accessManager.grantRole('0x65d4fB003774e329682A9B46e2673612a092B40c', 4);
-//     await accessManager.grantRole('0x65d4fB003774e329682A9B46e2673612a092B40c', 4);
-//     console.log("Access rank assigned to ClassRegistry.");
-// await token.addClass(await c6.getAddress(), 1, true)
+    // const lib2C = await toke.deploy();
+    // await lib2C.waitForDeployment();
+    // console.log(`EnumSet deployed at: ${await lib2C.getAddress()}`);
+
+
+    const lib3C = await lib3.deploy( );
+    await lib3C.waitForDeployment();
+     console.log(`AtropaMath deployed at: ${await lib3C.getAddress()}`);
+    const Token = await ethers.getContractFactory('VibeRegistry', {
+      libraries: {
+         AtropaMath: await lib3C.getAddress(),
+       
+         
+        //  LibRegistry: '0xB9e8796BEd82cB0c12f030cDb208307895a5e3B2'
+      },
+    });
+
+    let mooo223 = {
+      creatorAddress: signer.address,
+      info: "ggen pool",
+      level: 0
+    }
+  //   let mooo22 = {
+  //     creatorAddress: signer.address,
+  //     info: "baase",
+  //     level: 0
+  //   }
+
+      let mooo = {
+    creatorAddress: signer.address,
+    info: "good vibes",
+    level: 0
+  }
+  let mooo2 = {
+    creatorAddress: signer.address,
+    info: "New Trading Rewards",
+    level: 0
+  }
+
+  const b27 = await ethers.getContractFactory(`ShaStorage`);
+ const  b2 = await b27.deploy(await accessManager.getAddress());
+  await b2.waitForDeployment();
+  console.log(await b2.getAddress())
+ 
+    const classReg = await ethers.getContractFactory(`goodVibes`)
+	// , {
+	// 	libraries: {
+	// 		EnumSet: '0xBAe54b6E83B42144C4b8b89691CE0cC843FFc4d0',
+					   
+	// }});
+  const cee6 = await classReg.deploy(await accessManager.getAddress(),  mooo, await b2.getAddress())
+  await cee6.waitForDeployment();
+  console.log(await cee6.getAddress())
+
+// // //    const c3 = await classReg2.deploy('0xCB13Ca54A9744aFA2586E6232b94a58cF9B5E25C',mooo2);
+// // //    await c3.waitForDeployment();
+// // //   console.log(await c3.getAddress())
+
+
+
+
+ const classRegw = await ethers.getContractFactory(`LPVibeTracker`);
+ const cw6 = await classRegw.deploy(await accessManager.getAddress(),  mooo, await b2.getAddress() );
+ await cw6.waitForDeployment();
+ console.log(await cw6.getAddress())
+
+  // // //   await c6.waitForDeployment()const t
+  const token =  await Token.deploy(await accessManager.getAddress(), await b2.getAddress());
+     await token.waitForDeployment();
+     console.log(`XUSD deployed at: ${await token.getAddress()}`);
+
+//     //  console.log("Deploying XUSD...");
+ // const toker = await toke.deploy("XUSD Vibratile Asset", "XUSD", '100000000000000000000000000', await accessManager.getAddress(), '0x4201C8c73E963CcB05107fa9607cc1614d652588');
+
+
+   await toker.waitForDeployment();
+   console.log(`XUSD deployed at: ${await toker.getAddress()}`);
+
+// // //     // // Grant roles and set permissions
+// //   let mooo = {
+// //   creatorAddress: signer.address,
+// //   info: "Genesis staking Module",
+// // //   level: 0,
+// // // }
+// const classReg33 = await ethers.getContractFactory(`LPVibeTracker2`);
+//     // const classReg = await ethers.getContractFactory(`t1`);
+//     // const classReg3 = await ethers.getContractFactory(`t2`);
+//     const c6 = await classReg33.deploy(await accessManager.getAddress() );
+// // //     const c7 = await classReg3.deploy(await accessManager.getAddress(), mooo);
+
+// // //     const c5 = await classReg33.deploy(mooo, await accessManager.getAddress());
+//    await c6.waitForDeployment()
+await accessManager.grantRole(await cw6.getAddress(), 4);
+await accessManager.grantRole(await token.getAddress(), 4);
+await accessManager.grantRole(await cee6.getAddress(), 4);
+    await token.addClass(await cw6.getAddress(), 1)
+// // // //     await token.waitForDeployment();
+ await toker.setRegistry(await token.getAddress())
+// // //     console.log(`VibeRegistry deployed at: `);
+
+ await accessManager.grantRole(await accessManager.getAddress(), 4);
+await accessManager.grantRole(await token.getAddress(), 4);
+console.log(await token.viewVibes('0x000006d6aBB723e82a885096bd1e0bcA84a90503'))
+// // //     // await accessManager.grantRole('0x65d4fB003774e329682A9B46e2673612a092B40c', 4);
+// // //     // await accessManager.grantRole('0x65d4fB003774e329682A9B46e2673612a092B40c', 4);
+// // //     console.log("Access rank assigned to ClassRegistry.");
+ //await token.addClass(await cw6.getAddress(), 1, true)
+ await token.addClass(await cee6.getAddress(), 0)
+ await accessManager.grantRole(await cw6.getAddress(), 4);
+// // await token.addClass(await c6.getAddress(), 1, true)
+await toker.transfer(s2.address, ethers.parseEther("10"));
+await toker.transfer(s2.address, ethers.parseEther("10"));
+console.log(await token.viewVibes(signer.address))
+// await token.addClass(await cw6.getAddress(), 1, false)
+// // //await token.addClass(await c5.getAddress(), 1, false, true)
 //     // const reward = await class29.deploy(await toker.getAddress());
 //     // await reward.waitForDeployment();
 // //    console.log(`Reward deployed at: ${await reward.getAddress()}`);
@@ -90,44 +170,41 @@ async function deployRouter() {
 // //await token.setWhitelistedContract(signer.address)
 //     // Deploy Exchange
 
-// let moo = {
-//   creatorAddress: signer.address,
-//   info: "Genesis staking Module",
-//   level: 0,
-// }
+//await cw6.addLp('0x79fC0e8d904F7145d7eD2F1E74B96c806e9BF249')
 
 
 
 
 
-//      const exxclass = await exClass.deploy( '0xbbeA78397d4d4590882EFcc4820f03074aB2AB29', '0xCB13Ca54A9744aFA2586E6232b94a58cF9B5E25C', '0x7164E85A4C9b343255819B5E714B256075C2A5e6', {
-//       creatorAddress: signer.address,
-//       info: "Genesis Trading Rewards Module",
-//       level: 0,
-//     });
-//     await exxclass.waitForDeployment();
-// console.log(await exxclass.getAddress())
-//     //const rewardDistributor = await RewardDistributor.deploy("50000000000", await toker.getAddress(), await accessManager.getAddress(), await exxclass.getAddress());
-//     //await rewardDistributor.waitForDeployment();
-//     //console.log(`Exchange deployed at: ${await exxclass.getAddress()}`);
-//   //  await toker.transfer(s2.address, ethers.parseEther("10"));
-//    // await reward.setExchangeContract(await exxclass.getAddress());
-//     await exxclass.addToWhiteListAdmin('0xDAb2915b8940BD3B4Bc6BF5Ac80Fa4e558057321', "0x165C3410fC91EF562C50559f7d2289fEbed552d9");
-//   //  await exxclass.addToWhiteListAdmin(s2.address, "0x165C3410fC91EF562C50559f7d2289fEbed552d9");
-//     await token.addClass(await exxclass.getAddress(), 4, true)
-//     console.log("Exchange whitelist admin added.");
-//   //  await toker.transfer(s2.address, ethers.parseEther("100000"));
-// //
+    
+// // //     //const rewardDistributor = await RewardDistributor.deploy("50000000000", await toker.getAddress(), await accessManager.getAddress(), await exxclass.getAddress());
+// // //     //await rewardDistributor.waitForDeployment();
+// // //     //console.log(`Exchange deployed at: ${await exxclass.getAddress()}`);
+//  await toker.transfer(s2.address, ethers.parseEther("10"));
+// await toker.transfer(s2.address, ethers.parseEther("10"));
+// // //    // await reward.setExchangeContract(await exxclass.getAddress());
+// // //  //   await exxclass.addToWhiteListAdmin('0xDAb2915b8940BD3B4Bc6BF5Ac80Fa4e558057321', "0x165C3410fC91EF562C50559f7d2289fEbed552d9");
+// // //   //  await exxclass.addToWhiteListAdmin(s2.address, "0x165C3410fC91EF562C50559f7d2289fEbed552d9");
+// // //    // await token.addClass(await exxclass.getAddress(), 4, true)
+// // //     console.log("Exchange whitelist admin added.");
+// // //    await toker.transfer(s2.address, ethers.parseEther("100000"));
+
+// // // //console.log(await exxclass.getIndividualSellWeightInPairOnDate(signer.address, signer.address, await exxclass.getCurrentDate()))
+// // // //await exxclass.claimReward()
+// // // await toker.transfer(s2.address, ethers.parseEther("100000"));
+
+// // await toker.transfer(s2.address, ethers.parseEther("100000"));
+
 // //console.log(await exxclass.getIndividualSellWeightInPairOnDate(signer.address, signer.address, await exxclass.getCurrentDate()))
 // //await exxclass.claimReward()
-// //await toker.transfer(s2.address, ethers.parseEther("100000"));
+// await toker.transfer(s2.address, ethers.parseEther("100000"));
 //   //  await toker.transfer('0x165C3410fC91EF562C50559f7d2289fEbed552d9', ethers.parseEther("100000"));
 //    // console.log(await exxclass.getIndividualSellWeightInPairOnDate(signer.address, "0x165C3410fC91EF562C50559f7d2289fEbed552d9", await exxclass.getCurrentDate()))
 //   //  await toker.transfer('0x165C3410fC91EF562C50559f7d2289fEbed552d9', ethers.parseEther("100000"));
 //    // await exxclass.claimReward()
-//    await toker.approve(await exxclass.getAddress(), "99999999999999999999999999999999999")
+//   // await toker.approve(await exxclass.getAddress(), "99999999999999999999999999999999999")
 // //   console.log(await exxclass.getIndividualBuyWeightInPairOnDate(signer.address, signer.address, await exxclass.getCurrentDate()))
-//    await exxclass.depositRewards('10000000000000000000000')
+//  //  await exxclass.depositRewards('10000000000000000000000')
 //  //   await toker.transfer('0x165C3410fC91EF562C50559f7d2289fEbed552d9', ethers.parseEther("100000"));
 
 
@@ -139,32 +216,32 @@ async function deployRouter() {
 
 
 
-    // const PriceSlowDecay = await ethers.getContractFactory('PriceSlowDecay');
-    // const priceSlowDecay = await PriceSlowDecay.deploy(ethers.parseEther("250000"), ethers.parseEther("10000"), 365);
-    // await priceSlowDecay.waitForDeployment();
-    // console.log(`PriceSlowDecay deployed at: ${await priceSlowDecay.getAddress()}`);
-let moo = {
-  creatorAddress: signer.address,
-  info: "BankTellor",
-  level: 0,
-}
-//bankersRemourse
-    const exClass = await ethers.getContractFactory('BankerTracking', {
-            libraries: { AtropaMath: "0x413C438e8f17fecc6d5Ae3Df8975CA3F68bE312a"},
-          })
+//     // const PriceSlowDecay = await ethers.getContractFactory('PriceSlowDecay');
+//     // const priceSlowDecay = await PriceSlowDecay.deploy(ethers.parseEther("250000"), ethers.parseEther("10000"), 365);
+//     // await priceSlowDecay.waitForDeployment();
+//     // console.log(`PriceSlowDecay deployed at: ${await priceSlowDecay.getAddress()}`);
+// let moo = {
+//   creatorAddress: signer.address,
+//   info: "BankTellor",
+//   level: 0,
+// }
+// //bankersRemourse
+//     const exClass = await ethers.getContractFactory('BankerTracking', {
+//             libraries: { AtropaMath: "0x413C438e8f17fecc6d5Ae3Df8975CA3F68bE312a"},
+//           })
     
-    const exxclass = await exClass.deploy('0xCB13Ca54A9744aFA2586E6232b94a58cF9B5E25C', moo);
-    await exxclass.waitForDeployment();
-    console.log(await exxclass.getAddress())
+//     const exxclass = await exClass.deploy('0xCB13Ca54A9744aFA2586E6232b94a58cF9B5E25C', moo);
+//     await exxclass.waitForDeployment();
+//     console.log(await exxclass.getAddress())
 
-    // await accessManager.grantRole(await exxclass.getAddress(), 4)
-    //     let oneSwap = toke.attach('0xEb14f3192A37ad2501F3BF6627C565e6799aD661' )
-    // await oneSwap.approve(await exxclass.getAddress(), '999999999999999999999999999999999')
-    // await exxclass.mintPass()
+//     // await accessManager.grantRole(await exxclass.getAddress(), 4)
+//     //     let oneSwap = toke.attach('0xEb14f3192A37ad2501F3BF6627C565e6799aD661' )
+//     // await oneSwap.approve(await exxclass.getAddress(), '999999999999999999999999999999999')
+//     // await exxclass.mintPass()
 
-    // console.log(await exxclass.getUserInfo(signer.address))
-    // console.log(await exxclass.ownerOf(4))
-   // console.log(await exxclass.getAllUsersInfo())
+//     // console.log(await exxclass.getUserInfo(signer.address))
+//     // console.log(await exxclass.ownerOf(4))
+//    // console.log(await exxclass.getAllUsersInfo())
 
 
 
@@ -192,22 +269,158 @@ let moo = {
 //      console.log(`VibePass deployed at: ${await i.getAddress()}`);
 
 //     // Deploy MyGovernor
-//     const MyGovernor = await ethers.getContractFactory('MyGovernor', {
-//       libraries: { LibRegistryAdd: await lib22C.getAddress() },
-//     });
-//     const governor = await MyGovernor.deploy(await accessManager.getAddress(), await vibePass.getAddress(), await token.getAddress());
-//     await governor.waitForDeployment();
-//     console.log(`MyGovernor deployed at: ${await governor.getAddress()}`);
-//     await accessManager.grantRole(await vibePass.getAddress(), 4);
-//     await accessManager.grantRole(await governor.getAddress(), 4);
+    // const MyGovernor = await ethers.getContractFactory('MyGovernor', {
+    //   libraries: { LibRegistryAdd: await lib22C.getAddress() },
+    // });
+    // const governor = await MyGovernor.deploy(await accessManager.getAddress(), await vibePass.getAddress(), await token.getAddress());
+    // await governor.waitForDeployment();
+    // console.log(`MyGovernor deployed at: ${await governor.getAddress()}`);
+    // await accessManager.grantRole(await vibePass.getAddress(), 4);
+    // await accessManager.grantRole(await governor.getAddress(), 4);
 // //     console.log("Governor role granted.");
+let abi = [
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_owner",
+				"type": "address"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "previousOwner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferred",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "WETHBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "balance",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "recoverETH",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_token",
+				"type": "address"
+			}
+		],
+		"name": "recoverTokens",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_router",
+				"type": "address"
+			},
+			{
+				"internalType": "address[]",
+				"name": "path",
+				"type": "address[]"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amountIn",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "slipage",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			}
+		],
+		"name": "swapV2",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+]
 
-//     // Add liquidity using Router
-//     const router = new ethers.Contract(
-//       "0x165C3410fC91EF562C50559f7d2289fEbed552d9", // Replace with actual Router address
-//       require("./routerabi.json"),
-//       signer
-//     );
+const router2 = new ethers.Contract(
+  "0x165C3410fC91EF562C50559f7d2289fEbed552d9", // Replace with actual Router address
+  require("./routerabi.json"),
+  signer
+);
+// //     // Add liquidity using Router
+    const router = new ethers.Contract(
+      "0x453ab7510fb3e138333f326D2e4E89B829Cb7185", // Replace with actual Router address
+      abi,
+      signer
+    );
 //     const router2 = new ethers.Contract(
 //       "0x165C3410fC91EF562C50559f7d2289fEbed552d9", // Replace with actual Router address
 //       require("./routerabi.json"),
@@ -237,21 +450,78 @@ let moo = {
 // console.log(ethers.formatEther(await exxclass.getUserBalance(s2.address)))
 //     //console.log(await toker.getLatestBurnContract(signer.address))
 //    // console.log(ethers.formatEther(await toker.burnBalanceEOA(signer.address)))
-//     await token4.approve(await router2.getAddress(), ethers.parseEther("10000000000000000000000000000000000000000"));
-//     await token3.approve(await router2.getAddress(), ethers.parseEther("10000000000000000000000000000000000000000"));
-//     await token2.approve(await router2.getAddress(), ethers.parseEther("10000000000000000000000000000000000000000"));
-//     await toker.approve(await router.getAddress(), ethers.parseEther("10000000000000000000000000000000000000000"));
-//     console.log("Tokens approved for router.");
-//     await router2.swapExactTokensForTokensSupportingFeeOnTransferTokens(
-   
-//       ethers.parseEther("300"),
-//       0,
-//       [await toker.getAddress(), '0xDb2227115f8DB3D6BEC960A170EC8EB8918ef057'],
-//       s2.address,
-//      '99999999999999999999999999999999999'
-//     );
+// //     await token4.approve(await router2.getAddress(), ethers.parseEther("10000000000000000000000000000000000000000"));
+// //     await token3.approve(await router2.getAddress(), ethers.parseEther("10000000000000000000000000000000000000000"));
+// //     await token2.approve(await router2.getAddress(), ethers.parseEther("10000000000000000000000000000000000000000"));
+    await toker.approve(await router2.getAddress(), ethers.parseEther("10000000000000000000000000000000000000000"));
+    await toker.approve(await router.getAddress(), ethers.parseEther("10000000000000000000000000000000000000000"));
 
-//     await router2.swapExactTokensForTokensSupportingFeeOnTransferTokens(
+  await router2.addLiquidityETH(
+    await toker.getAddress(),
+    ethers.parseEther("1"),
+    "1",
+    "1",
+    signer.address,
+    "999999999999999999999",
+    { value: ethers.parseEther("6")  }
+  );
+
+//   //await cw6.addLp(await router.getAddress())
+// //     console.log("Tokens approved for router.");
+    await router.swapV2(
+    await router2.getAddress(),
+      [ await toker.getAddress(), "0xEb14f3192A37ad2501F3BF6627C565e6799aD661"],
+      ethers.parseEther("1"),
+      40,    
+      s2.address,
+     
+     
+    );
+     await toker.transfer(s2.address, ethers.parseEther("10"));
+
+	 await router.swapV2(
+		await router2.getAddress(),
+		  [ await toker.getAddress(), "0xEb14f3192A37ad2501F3BF6627C565e6799aD661"],
+		  ethers.parseEther("10"),
+		  40,    
+		  s2.address,
+		 
+		 
+		);
+
+
+		await router.swapV2(
+			await router2.getAddress(),
+			  [ await toker.getAddress(), "0xEb14f3192A37ad2501F3BF6627C565e6799aD661"],
+			  ethers.parseEther("10"),
+			  40,    
+			  s2.address,
+			 
+			 
+			);
+			await router2.addLiquidityETH(
+				await toker.getAddress(),
+				ethers.parseEther("1"),
+				"1",
+				"1",
+				signer.address,
+				"999999999999999999999",
+				{ value: ethers.parseEther("6")  }
+			  );
+
+	 await router.swapV2(
+		await router2.getAddress(),
+		  [ await toker.getAddress(), "0xEb14f3192A37ad2501F3BF6627C565e6799aD661"],
+		  ethers.parseEther("10"),
+		  40,    
+		  s2.address,
+		 
+		 
+		);
+
+		console.log(await token.viewVibes(signer.address))
+
+// //     await router2.swapExactTokensForTokensSupportingFeeOnTransferTokens(
    
 //       ethers.parseEther("10"),
 //       0,

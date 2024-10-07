@@ -1,0 +1,131 @@
+{
+	"deploy": {
+		"VM:-": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"main:1": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"ropsten:3": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"rinkeby:4": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"kovan:42": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"goerli:5": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"Custom": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		}
+	},
+	"data": {
+		"bytecode": {
+			"functionDebugData": {},
+			"generatedSources": [],
+			"linkReferences": {},
+			"object": "",
+			"opcodes": "",
+			"sourceMap": ""
+		},
+		"deployedBytecode": {
+			"functionDebugData": {},
+			"generatedSources": [],
+			"immutableReferences": {},
+			"linkReferences": {},
+			"object": "",
+			"opcodes": "",
+			"sourceMap": ""
+		},
+		"gasEstimates": null,
+		"methodIdentifiers": {
+			"calculateTotalBasisFee((address,uint64,int256,(address,address)),uint64,uint256,(address,address))": "dcee6714"
+		}
+	},
+	"abi": [
+		{
+			"inputs": [
+				{
+					"components": [
+						{
+							"internalType": "address",
+							"name": "userAddress",
+							"type": "address"
+						},
+						{
+							"internalType": "uint64",
+							"name": "aura",
+							"type": "uint64"
+						},
+						{
+							"internalType": "int256",
+							"name": "vibes",
+							"type": "int256"
+						},
+						{
+							"components": [
+								{
+									"internalType": "contract SHA",
+									"name": "Rod",
+									"type": "address"
+								},
+								{
+									"internalType": "contract SHA",
+									"name": "Cone",
+									"type": "address"
+								}
+							],
+							"internalType": "struct VibeRegistry.Sect",
+							"name": "sect",
+							"type": "tuple"
+						}
+					],
+					"internalType": "struct VibeRegistry.UserProfileHash",
+					"name": "user",
+					"type": "tuple"
+				},
+				{
+					"internalType": "uint64",
+					"name": "toAura",
+					"type": "uint64"
+				},
+				{
+					"internalType": "uint256",
+					"name": "fromAura",
+					"type": "uint256"
+				},
+				{
+					"components": [
+						{
+							"internalType": "contract SHA",
+							"name": "Rod",
+							"type": "address"
+						},
+						{
+							"internalType": "contract SHA",
+							"name": "Cone",
+							"type": "address"
+						}
+					],
+					"internalType": "struct VibeRegistry.Sect",
+					"name": "cat",
+					"type": "tuple"
+				}
+			],
+			"name": "calculateTotalBasisFee",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		}
+	]
+}

@@ -1,0 +1,10 @@
+User:
+  address: address 
+  aura: uint64 id
+
+
+Process:
+  address: address 
+  SHIO: address
+  aura: uint64 id
+

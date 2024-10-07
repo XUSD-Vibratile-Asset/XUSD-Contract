@@ -9,6 +9,7 @@ interface IVibePass {
    function addClass(address class, bool active, uint classType, bool _process) external;
  function viewUrl(address user) external view returns(string memory); 
 function totalSupply()external view returns(uint256);
+ function balanceOf(address account) external view returns (uint256);
  function getBurnAmounts(address user) external view  returns (uint256);
 
 }

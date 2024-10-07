@@ -1,7 +1,7 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("@nomicfoundation/hardhat-ignition-ethers");
 require('@openzeppelin/hardhat-upgrades');
- require('@primitivefi/hardhat-dodoc');
+//  require('@primitivefi/hardhat-dodoc');
 require('dotenv').config()
 require('@primitivefi/hardhat-marmite');
 /** @type import('hardhat/config').HardhatUserConfig */
@@ -27,7 +27,7 @@ solidity: {
   },
   networks: {
     pulsechain: {
-      url:  `https://rpc.pulsechain.com/`,
+      url:  'http://127.0.0.1:8545/',
       accounts: [process.env.PK],
      
     },

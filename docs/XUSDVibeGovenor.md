@@ -10,6 +10,23 @@
 
 ## Methods
 
+### MotzkinPrime
+
+```solidity
+function MotzkinPrime() external view returns (uint64)
+```
+
+
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint64 | undefined |
+
 ### VoterTallyMap
 
 ```solidity
@@ -74,6 +91,28 @@ function denominator() external view returns (uint256)
 | Name | Type | Description |
 |---|---|---|
 | _0 | uint256 | undefined |
+
+### generateAura
+
+```solidity
+function generateAura(address user) external pure returns (uint64)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| user | address | undefined |
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint64 | undefined |
 
 ### getUserVotingHistory
 
@@ -186,6 +225,22 @@ Update the VibePass contract address.
 | Name | Type | Description |
 |---|---|---|
 | _Nft | address | The new address for the VibePass contract. |
+
+### updateRegistry
+
+```solidity
+function updateRegistry(address registry) external nonpayable
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| registry | address | undefined |
 
 ### updateVoteDen
 

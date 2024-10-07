@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-import {FixedPointMathLib} from "./FixedPointMathLib.sol"; // Import fixed-point math library
+import {FixedPointMathLib} from "./math/FixedPointMathLib.sol"; // Import fixed-point math library
 
 contract PriceSlowDecay {
     using FixedPointMathLib for uint256;

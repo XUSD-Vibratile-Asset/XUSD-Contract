@@ -4,9 +4,14 @@ pragma solidity ^0.8.20;
 
 import "./VibeRegistry.sol";
 import "./interface/IVibePass.sol";
+import "./Address.sol";
 import "./vibes/VibeBase.sol";
 import "./AddressReg.sol";
+
 import "./AccessControl/AccessorMod.sol";
+
+
+
 
 /**
  * @title MyGovernor
@@ -15,8 +20,9 @@ import "./AccessControl/AccessorMod.sol";
  */
 contract XUSDVibeGovenor is AccesorMod {
     using LibRegistryAdd for LibRegistryAdd.Registry;
-    using Address for address;
-   
+using Address for address;
+
+
 
     // Custom errors
     error AlreadyProposed(address classAddress);
@@ -98,6 +104,8 @@ contract XUSDVibeGovenor is AccesorMod {
         AuthLib.Rank role; // The role they had when voting
     }
 
+
+
     // State variables
     uint public denominator = 2;
 
@@ -105,9 +113,10 @@ contract XUSDVibeGovenor is AccesorMod {
     mapping(uint => mapping(address => bool)) private voterRegistryMap;
     mapping(address => VoteTally) public VoterTallyMap;
     mapping(address => UserVote[]) private userVoteHistory;
-
+    uint64 public constant MotzkinPrime = 953467954114363;
     bool safeGaurd = false;
     IVibePass private vibePass;
+
     VibeRegistry private vibeReg;
 
     /**
@@ -123,8 +132,12 @@ contract XUSDVibeGovenor is AccesorMod {
     ) AccesorMod(_access) {
         vibePass = IVibePass(Nft);
         vibeReg = VibeRegistry(_VibeReg);
-    }
 
+  
+    }
+   function generateAura(address user) public pure returns (uint64) {
+        return uint64(uint256(uint160(user))) % MotzkinPrime;
+    }
     /**
      * @notice Update the denominator for vote approval threshold.
      * @param _denominator New denominator for vote tally checks.
@@ -147,6 +160,11 @@ contract XUSDVibeGovenor is AccesorMod {
     function updateNft(address _Nft) external onlySenator {
         emit NftAddressUpdated(address(vibePass), _Nft);
         vibePass = IVibePass(_Nft);
+    }
+
+        function updateRegistry(address registry) external onlySenator {
+
+        vibeReg = VibeRegistry(registry);
     }
 
     /**
@@ -244,7 +262,7 @@ contract XUSDVibeGovenor is AccesorMod {
     function vote(address classAddress) external nonReentrant {
         VoteTally storage Vote = VoterTallyMap[classAddress];
 
-        if (vibePass.tokenIdByOwner(msg.sender) == 0) {
+        if (vibePass.balanceOf(msg.sender) == 0) {
             revert NeedAVibePass();
         }
 
@@ -302,12 +320,13 @@ contract XUSDVibeGovenor is AccesorMod {
             if (safeGaurd) {
                 if (Vote.voteTotal > Vote.totalNft / denominator) {
                     if (Vote.rewards) {
-                        vibeReg.addClass(classAddress, 4, Vote.process);
+                        vibeReg.addClass(classAddress, 4);
                     } else {
                         vibeReg.addClass(
                             classAddress,
-                            Vote.classType,
-                            Vote.process
+                            Vote.classType
+                        
+
                         );
                     }
                     Vote.approved = true;
@@ -359,9 +378,9 @@ contract XUSDVibeGovenor is AccesorMod {
 
         if (Vote.voteTotal > Vote.totalNft / denominator) {
             if (Vote.rewards) {
-                vibeReg.addClass(classAddress, 4, Vote.process);
+                vibeReg.addClass(classAddress, 4);
             } else {
-                vibeReg.addClass(classAddress, Vote.classType, Vote.process);
+                vibeReg.addClass(classAddress, Vote.classType);
             }
             Vote.approved = true;
             emit ProposalStatusUpdated(classAddress, true, Vote.voteTotal);
@@ -382,11 +401,11 @@ contract XUSDVibeGovenor is AccesorMod {
         address classAddress
     ) external nonReentrant {
         bytes4 addClassSelector = bytes4(
-            keccak256("calculateTotalBasisFee(address,uint)")
+            keccak256("calculateTotalBasisFee(uint64,Trade[],SHIO,SHIO)")
         );
         supportsFunction(classAddress, addClassSelector);
 
-        if (vibePass.tokenIdByOwner(msg.sender) == 0) {
+        if (vibePass.balanceOf(msg.sender) == 0) {
             emit ProposalFailed(msg.sender, classAddress, "VibePass required");
             revert NeedAVibePass();
         }

@@ -26,9 +26,8 @@ abstract contract DYSNOMIA is MultiOwnable {
     uint256 public maxSupply;
     mapping(address => uint256) private _marketRates;
 
-    constructor(string memory name_, string memory symbol_, address mathContract) MultiOwnable(msg.sender) {
-        __name = name_;
-        __symbol = symbol_;
+    constructor(address mathContract) MultiOwnable(msg.sender) {
+       
         Xiao = atropaMath(mathContract);
         maxSupply = Xiao.Random() % 111111;
         uint256 originMint = Xiao.Random() % maxSupply / 10;

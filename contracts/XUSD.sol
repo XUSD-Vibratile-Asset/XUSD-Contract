@@ -3,14 +3,13 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 
-import "@openzeppelin/contracts/utils/Context.sol";
+
 import "@openzeppelin/contracts/utils/structs/Checkpoints.sol";
 import "./VibeRegistry.sol";
 import "./AccessControl/AccessorMod.sol";
 
-contract XUSD is Context, IERC20, IERC20Metadata, AccesorMod, Ownable {
+contract XUSD is Context, IERC20, IERC20Metadata, AccesorMod {
     using Checkpoints for Checkpoints.Trace224; // Using Checkpoints library for tracking burn history
 
     // Storage
@@ -47,7 +46,7 @@ contract XUSD is Context, IERC20, IERC20Metadata, AccesorMod, Ownable {
         uint256 initialBalance_,
         address _access,
         address t
-    ) AccesorMod(_access) Ownable(msg.sender) {
+    ) AccesorMod(_access)  {
         require(initialBalance_ > 0, "Initial supply cannot be zero");
         tressury = t;
         _name = name_;

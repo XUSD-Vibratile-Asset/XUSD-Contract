@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 import "./ERC721A.sol";
-
+import "./interface/IERC20.sol";
 import "./registry.sol";
 import "./math/atropamath.sol";
 

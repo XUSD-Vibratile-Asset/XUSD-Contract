@@ -10,6 +10,23 @@
 
 ## Methods
 
+### Cat
+
+```solidity
+function Cat() external view returns (contract SHIO)
+```
+
+
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | contract SHIO | undefined |
+
 ### MotzkinPrime
 
 ```solidity
@@ -27,40 +44,22 @@ function MotzkinPrime() external view returns (uint64)
 |---|---|---|
 | _0 | uint64 | undefined |
 
-### activateVibeUser
-
-```solidity
-function activateVibeUser(address user, address class) external nonpayable
-```
-
-Reactivates a user&#39;s vibe entry for a specific class.
-
-*Can only be called by the Consul.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| user | address | The address of the user. |
-| class | address | The address of the class. |
-
 ### addClass
 
 ```solidity
-function addClass(address class, uint256 classType, bool _process) external nonpayable
+function addClass(address class, uint256 classType) external nonpayable
 ```
 
-Adds a new class to the specified registry.
 
-*Can only be called by a Senator.*
+
+
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| class | address | The address of the class to be added. |
-| classType | uint256 | The type of class (0: To, 1: From, 2: Caller, 3: Sender, 4: Contract). |
-| _process | bool | Whether the class requires processing. |
+| class | address | undefined |
+| classType | uint256 | undefined |
 
 ### calculateAndSumBasis
 
@@ -68,7 +67,7 @@ Adds a new class to the specified registry.
 function calculateAndSumBasis(address to, address from, address _caller, address sender, uint256 amount) external nonpayable returns (int256, uint256)
 ```
 
-Calculates vibes for multiple addresses, sums them, and applies to the caller.
+
 
 
 
@@ -76,111 +75,45 @@ Calculates vibes for multiple addresses, sums them, and applies to the caller.
 
 | Name | Type | Description |
 |---|---|---|
-| to | address | The address of the recipient. |
-| from | address | The address of the sender. |
-| _caller | address | The address of the contract caller. |
-| sender | address | The address of the transaction initiator. |
-| amount | uint256 | The amount to process. |
+| to | address | undefined |
+| from | address | undefined |
+| _caller | address | undefined |
+| sender | address | undefined |
+| amount | uint256 | undefined |
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | int256 | The sum of calculated vibes and the original amount. |
+| _0 | int256 | undefined |
 | _1 | uint256 | undefined |
 
-### calculateCurrentVibe
+### generateAura
 
 ```solidity
-function calculateCurrentVibe(address user) external nonpayable returns (int256)
+function generateAura(address user) external pure returns (uint64)
 ```
 
-View function to calculate the current total vibe of a user.
 
 
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| user | address | The address of the user whose vibe you want to calculate. |
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | int256 | The total vibes of the user. |
-
-### deactivateVibe
-
-```solidity
-function deactivateVibe(address class, uint256 classType) external nonpayable
-```
-
-Deactivates and removes a class from the specified registry.
-
-*Can only be called by the Consul.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| class | address | The address of the class to be removed. |
-| classType | uint256 | The type of class (0: To, 1: From, 2: Caller, 3: Sender, 4: Contract). |
-
-### deactivateVibeUser
-
-```solidity
-function deactivateVibeUser(address user, address class) external nonpayable
-```
-
-Deactivates a user&#39;s vibe entry for a specific class.
-
-*Can only be called by the Consul.*
+*Generates a unique aura based on the user&#39;s address.*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
 | user | address | The address of the user. |
-| class | address | The address of the class. |
 
-### setClassLimit
-
-```solidity
-function setClassLimit(uint256 limit) external nonpayable
-```
-
-Updates the class limit for registry sorting.
-
-*Can only be called by the Consul.*
-
-#### Parameters
+#### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| limit | uint256 | The new class limit. |
+| _0 | uint64 | A unique aura value. |
 
-### setWhitelistedContract
-
-```solidity
-function setWhitelistedContract(address contractWhite) external nonpayable
-```
-
-Sets a contract as whitelisted for vibe calculations.
-
-*Can only be called by a Senator.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| contractWhite | address | The address of the contract to whitelist. |
-
-### showAllVibeClasses
+### getAllVibes
 
 ```solidity
-function showAllVibeClasses() external nonpayable returns (struct VibeRegistry.MaterClass[])
+function getAllVibes() external view returns (address[])
 ```
 
 
@@ -192,7 +125,75 @@ function showAllVibeClasses() external nonpayable returns (struct VibeRegistry.M
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | VibeRegistry.MaterClass[] | undefined |
+| _0 | address[] | undefined |
+
+### getAllVibesOne
+
+```solidity
+function getAllVibesOne() external view returns (address[])
+```
+
+
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | address[] | undefined |
+
+### getAllVibesRewards
+
+```solidity
+function getAllVibesRewards() external view returns (address[])
+```
+
+
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | address[] | undefined |
+
+### getAllVibesSecond
+
+```solidity
+function getAllVibesSecond() external view returns (address[])
+```
+
+
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | address[] | undefined |
+
+### lastProcessedBlock
+
+```solidity
+function lastProcessedBlock() external view returns (uint256)
+```
+
+
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint256 | undefined |
 
 ### viewVibes
 
@@ -200,7 +201,7 @@ function showAllVibeClasses() external nonpayable returns (struct VibeRegistry.M
 function viewVibes(address user) external view returns (int256)
 ```
 
-View the current vibes of a specific user.
+
 
 
 
@@ -208,236 +209,14 @@ View the current vibes of a specific user.
 
 | Name | Type | Description |
 |---|---|---|
-| user | address | The address of the user whose vibes you want to query. |
+| user | address | undefined |
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | int256 | The current vibes of the user. |
+| _0 | int256 | undefined |
 
-### xusd
-
-```solidity
-function xusd() external view returns (contract XUSD)
-```
-
-
-
-
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | contract XUSD | undefined |
-
-
-
-## Events
-
-### ClassAdded
-
-```solidity
-event ClassAdded(address indexed classAddress, uint256 classType)
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| classAddress `indexed` | address | undefined |
-| classType  | uint256 | undefined |
-
-### ClassDeactivated
-
-```solidity
-event ClassDeactivated(address indexed classAddress, uint256 classType)
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| classAddress `indexed` | address | undefined |
-| classType  | uint256 | undefined |
-
-### ClassLimitUpdated
-
-```solidity
-event ClassLimitUpdated(uint256 newLimit)
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| newLimit  | uint256 | undefined |
-
-### ClassRemoved
-
-```solidity
-event ClassRemoved(address indexed classAddress, uint256 classType)
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| classAddress `indexed` | address | undefined |
-| classType  | uint256 | undefined |
-
-### MasterClassErrorLogged
-
-```solidity
-event MasterClassErrorLogged(address indexed classAddress, uint256 Omnicron)
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| classAddress `indexed` | address | undefined |
-| Omnicron  | uint256 | undefined |
-
-### MasterClassVibesUpdated
-
-```solidity
-event MasterClassVibesUpdated(address indexed classAddress, int256 vibes)
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| classAddress `indexed` | address | undefined |
-| vibes  | int256 | undefined |
-
-### RewardsCalculated
-
-```solidity
-event RewardsCalculated(address indexed classAddress, bytes reason)
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| classAddress `indexed` | address | undefined |
-| reason  | bytes | undefined |
-
-### RewardsCalculationFailed
-
-```solidity
-event RewardsCalculationFailed(address indexed classHash, bytes reason)
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| classHash `indexed` | address | undefined |
-| reason  | bytes | undefined |
-
-### VibeUserActivated
-
-```solidity
-event VibeUserActivated(address indexed user, address classAddress)
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| user `indexed` | address | undefined |
-| classAddress  | address | undefined |
-
-### VibeUserDeactivated
-
-```solidity
-event VibeUserDeactivated(address indexed user, address classAddress)
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| user `indexed` | address | undefined |
-| classAddress  | address | undefined |
-
-### VibesCalculated
-
-```solidity
-event VibesCalculated(address indexed user, int256 vibes)
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| user `indexed` | address | undefined |
-| vibes  | int256 | undefined |
-
-### WhitelistedContractAdded
-
-```solidity
-event WhitelistedContractAdded(address indexed contractAddress)
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| contractAddress `indexed` | address | undefined |
 
 
 
